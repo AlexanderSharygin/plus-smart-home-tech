@@ -12,11 +12,11 @@ import ru.yandex.practicum.telemetry.collector.model.enums.hub.DeviceActionType;
 @ToString
 public class DeviceAction {
 
-  @NotBlank
-  private String sensorId;
+    @NotBlank
+    private String sensorId;
 
-  @NotNull
-  private DeviceActionType type;
+    @NotNull
+    private DeviceActionType type;
 
-  private Integer value;
+    private Integer value;
 }

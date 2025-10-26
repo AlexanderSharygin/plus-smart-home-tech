@@ -17,20 +17,20 @@ import java.util.List;
 @ToString(callSuper = true)
 public class ScenarioAddedEvent extends HubEvent {
 
-  @NotBlank
-  @Size(min = 3)
-  private String name;
+    @NotBlank
+    @Size(min = 3)
+    private String name;
 
-  @NotNull
-  @Valid
-  private List<ScenarioCondition> conditions;
+    @NotNull
+    @Valid
+    private List<ScenarioCondition> conditions;
 
-  @NotNull
-  @Valid
-  private List<DeviceAction> actions;
+    @NotNull
+    @Valid
+    private List<DeviceAction> actions;
 
-  @Override
-  public HubEventType getType() {
-    return HubEventType.SCENARIO_ADDED;
-  }
+    @Override
+    public HubEventType getType() {
+        return HubEventType.SCENARIO_ADDED;
+    }
 }

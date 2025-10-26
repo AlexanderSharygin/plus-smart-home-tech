@@ -12,17 +12,17 @@ import ru.yandex.practicum.telemetry.collector.model.enums.sensor.SensorEventTyp
 @ToString(callSuper = true)
 public class MotionSensorEvent extends SensorEvent {
 
-  @NotNull
-  private Integer linkQuality;
+    @NotNull
+    private Integer linkQuality;
 
-  @NotNull
-  private Boolean motion;
+    @NotNull
+    private Boolean motion;
 
-  @NotNull
-  private Integer voltage;
+    @NotNull
+    private Integer voltage;
 
-  @Override
-  public SensorEventType getType() {
-    return SensorEventType.MOTION_SENSOR_EVENT;
-  }
+    @Override
+    public SensorEventType getType() {
+        return SensorEventType.MOTION_SENSOR_EVENT;
+    }
 }

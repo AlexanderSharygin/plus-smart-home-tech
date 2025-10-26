@@ -13,14 +13,14 @@ import ru.yandex.practicum.telemetry.collector.model.enums.hub.HubEventType;
 @ToString(callSuper = true)
 public class DeviceAddedEvent extends HubEvent {
 
-  @NotBlank
-  private String id;
+    @NotBlank
+    private String id;
 
-  @NotNull
-  private DeviceType deviceType;
+    @NotNull
+    private DeviceType deviceType;
 
-  @Override
-  public HubEventType getType() {
-    return HubEventType.DEVICE_ADDED;
-  }
+    @Override
+    public HubEventType getType() {
+        return HubEventType.DEVICE_ADDED;
+    }
 }

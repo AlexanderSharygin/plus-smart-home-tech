@@ -14,15 +14,15 @@ import ru.yandex.practicum.telemetry.collector.model.enums.hub.ScenarioCondition
 @ToString
 public class ScenarioCondition {
 
-  @NotBlank
-  private String sensorId;
+    @NotBlank
+    private String sensorId;
 
-  @NotNull
-  private ScenarioConditionType type;
+    @NotNull
+    private ScenarioConditionType type;
 
-  @NotNull
-  private ScenarioConditionOperation operation;
+    @NotNull
+    private ScenarioConditionOperation operation;
 
-  private Integer value;
+    private Integer value;
 
 }
