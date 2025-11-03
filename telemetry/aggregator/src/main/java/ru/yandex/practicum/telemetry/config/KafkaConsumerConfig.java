@@ -1,4 +1,4 @@
-package pro.java.education.aggregator.config;
+package ru.yandex.practicum.telemetry.config;
 
 import lombok.Getter;
 import lombok.Setter;

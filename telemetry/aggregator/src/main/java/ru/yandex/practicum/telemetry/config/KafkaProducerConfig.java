@@ -1,4 +1,4 @@
-package pro.java.education.aggregator.config;
+package ru.yandex.practicum.telemetry.config;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;

@@ -1,8 +1,8 @@
-package pro.java.education.aggregator.service;
+package ru.yandex.practicum.telemetry.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pro.java.education.aggregator.repository.SnapshotRepository;
+import ru.yandex.practicum.telemetry.repository.SnapshotRepository;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorStateAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;

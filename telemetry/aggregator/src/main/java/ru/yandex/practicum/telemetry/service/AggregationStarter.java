@@ -1,4 +1,4 @@
-package pro.java.education.aggregator.service;
+package ru.yandex.practicum.telemetry.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -9,7 +9,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.errors.WakeupException;
-import pro.java.education.aggregator.config.KafkaTopicConfig;
+import ru.yandex.practicum.telemetry.config.KafkaTopicConfig;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 

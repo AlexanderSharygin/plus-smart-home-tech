@@ -1,4 +1,4 @@
-package pro.java.education.aggregator.service;
+package ru.yandex.practicum.telemetry.service;
 
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
