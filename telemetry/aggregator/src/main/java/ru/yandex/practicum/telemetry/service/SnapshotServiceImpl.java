@@ -21,20 +21,28 @@ public class SnapshotServiceImpl implements SnapshotService {
     @Override
     public Optional<SensorsSnapshotAvro> updateState(SensorEventAvro event) {
 
+
         SensorsSnapshotAvro snapshot = snapshotRepository.findByHubId(event.getHubId())
                 .orElseGet(() -> createSnapshot(event));
-        if (!isSnapshotShouldBeUpdated(snapshot, event)) {
+
+        if (isCurrentSnapshotValid(snapshot, event)) {
             return Optional.empty();
-        } else {
-            Instant updateTimeStamp = event.getTimestamp();
-            SensorStateAvro updatedState = SensorStateAvro.newBuilder().
-                    setTimestamp(updateTimeStamp)
-                    .setData(event.getPayload()).build();
-            snapshot.getSensorsState().put(event.getId(), updatedState);
-            snapshot.setTimestamp(updateTimeStamp);
         }
+
+        updateSnapshotData(snapshot, event);
+
         snapshotRepository.save(snapshot);
         return Optional.of(snapshot);
+    }
+
+    private void updateSnapshotData(final SensorsSnapshotAvro snapshot, final SensorEventAvro event) {
+        final SensorStateAvro newState = SensorStateAvro.newBuilder()
+                .setTimestamp(event.getTimestamp())
+                .setData(event.getPayload())
+                .build();
+
+        snapshot.getSensorsState().put(event.getId(), newState);
+        snapshot.setTimestamp(event.getTimestamp());
     }
 
     private boolean isSnapshotShouldBeUpdated(SensorsSnapshotAvro currentSnapshot, SensorEventAvro event) {
@@ -56,5 +64,14 @@ public class SnapshotServiceImpl implements SnapshotService {
                 .setTimestamp(event.getTimestamp())
                 .setSensorsState(new HashMap<>())
                 .build();
+    }
+
+    private boolean isCurrentSnapshotValid(final SensorsSnapshotAvro currentSnapshot,
+                                           final SensorEventAvro event) {
+        final SensorStateAvro currentState = currentSnapshot.getSensorsState().get(event.getId());
+
+        return currentState != null &&
+                (!currentState.getTimestamp().isBefore(event.getTimestamp()) ||
+                        currentState.getData().equals(event.getPayload()));
     }
 }
