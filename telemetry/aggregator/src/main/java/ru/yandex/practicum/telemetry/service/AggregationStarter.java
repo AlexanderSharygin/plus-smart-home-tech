@@ -33,29 +33,10 @@ public class AggregationStarter {
     private final KafkaTopicConfig topics;
     private static final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
 
-
-    private static void manageOffsets(ConsumerRecord<String, SensorEventAvro> record, int count, KafkaConsumer<String, SensorEventAvro> consumer) {
-        // обновляем текущий оффсет для топика-партиции
-        currentOffsets.put(
-                new TopicPartition(record.topic(), record.partition()),
-                new OffsetAndMetadata(record.offset() + 1)
-        );
-
-        if(count % 10 == 0) {
-            consumer.commitAsync(currentOffsets, (offsets, exception) -> {
-                if(exception != null) {
-                    log.warn("Ошибка во время фиксации оффсетов: {}", offsets, exception);
-                }
-            });
-        }
-    }
-
     public void start() {
         Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
         try {
-
             consumer.subscribe(topics.getConsumerSubscriptions());
-
             while (true) {
                 ConsumerRecords<String, SensorEventAvro> records = consumer.poll(Duration.ofMillis(1000));
                 int count = 0;
@@ -66,7 +47,6 @@ public class AggregationStarter {
                 }
                 consumer.commitSync();
             }
-
         } catch (WakeupException ignored) {
         } catch (Exception e) {
             log.error("Ошибка во время обработки событий от датчиков", e);
@@ -77,9 +57,7 @@ public class AggregationStarter {
             } catch (Exception e) {
                 log.error("Ошибка во время освобождения ресурсов", e);
             } finally {
-                log.info("Закрываем консьюмер");
                 consumer.close();
-                log.info("Закрываем продюсер");
                 producer.close();
             }
         }
@@ -93,5 +71,19 @@ public class AggregationStarter {
                 log.error("Ошибка во время отправки сообщения в топик + {}", topics.producerTopic());
             }
         });
+    }
+
+    private static void manageOffsets(ConsumerRecord<String, SensorEventAvro> record, int count, KafkaConsumer<String, SensorEventAvro> consumer) {
+        currentOffsets.put(
+                new TopicPartition(record.topic(), record.partition()),
+                new OffsetAndMetadata(record.offset() + 1)
+        );
+        if(count % 10 == 0) {
+            consumer.commitAsync(currentOffsets, (offsets, exception) -> {
+                if(exception != null) {
+                    log.warn("Ошибка во время фиксации оффсетов: {}", offsets, exception);
+                }
+            });
+        }
     }
 }
