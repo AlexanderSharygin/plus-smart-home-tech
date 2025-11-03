@@ -42,8 +42,8 @@ public class SnapshotServiceImpl implements SnapshotService {
         if (state == null) {
             return false;
         }
-        
-        if (event.getTimestamp().isAfter(state.getTimestamp())) {
+
+        if (event.getTimestamp().isAfter(state.getTimestamp()) || event.getTimestamp().equals(state.getTimestamp())) {
             return !state.getData().equals(event.getPayload());
         } else {
             return false;
