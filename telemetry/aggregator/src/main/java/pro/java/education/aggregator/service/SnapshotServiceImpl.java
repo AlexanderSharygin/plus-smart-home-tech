@@ -1,0 +1,58 @@
+package pro.java.education.aggregator.service;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import pro.java.education.aggregator.repository.SnapshotRepository;
+import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
+import ru.yandex.practicum.kafka.telemetry.event.SensorStateAvro;
+import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
+
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor
+public class SnapshotServiceImpl implements SnapshotService {
+
+    private final SnapshotRepository snapshotRepository;
+
+    @Override
+    public Optional<SensorsSnapshotAvro> updateState(SensorEventAvro event) {
+
+        SensorsSnapshotAvro snapshot = snapshotRepository.findByHubId(event.getHubId())
+                .orElseGet(() -> createSnapshot(event));
+        if (isSnapshotShouldBeUpdated(snapshot, event)) {
+            Instant updateTimeStamp = event.getTimestamp();
+            SensorStateAvro updatedState = SensorStateAvro.newBuilder().
+                    setTimestamp(updateTimeStamp)
+                    .setData(event.getPayload()).build();
+            snapshot.getSensorsState().put(event.getId(), updatedState);
+            snapshot.setTimestamp(updateTimeStamp);
+            snapshotRepository.save(snapshot);
+
+            return Optional.of(snapshot);
+        }
+        return Optional.empty();
+    }
+
+    private boolean isSnapshotShouldBeUpdated(SensorsSnapshotAvro currentSnapshot, SensorEventAvro event) {
+        SensorStateAvro state = currentSnapshot.getSensorsState().get(event.getId());
+        if (state == null) {
+            return false;
+        }
+        if (event.getTimestamp().isAfter(state.getTimestamp())) {
+            return !state.getData().equals(event.getPayload());
+        } else {
+            return false;
+        }
+    }
+
+    private SensorsSnapshotAvro createSnapshot(SensorEventAvro event) {
+        return SensorsSnapshotAvro.newBuilder()
+                .setHubId(event.getHubId())
+                .setTimestamp(event.getTimestamp())
+                .setSensorsState(new HashMap<>())
+                .build();
+    }
+}

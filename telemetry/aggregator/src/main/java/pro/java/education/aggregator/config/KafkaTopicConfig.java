@@ -17,7 +17,7 @@ import java.util.List;
 @Slf4j
 public class KafkaTopicConfig {
 
-  private List<String> consumerSubscription;
+  private List<String> consumerSubscriptions;
   private String producerTopic;
 
   @Bean
@@ -27,6 +27,6 @@ public class KafkaTopicConfig {
 
   @Bean
   public List<String> consumerTopic() {
-    return consumerSubscription;
+    return consumerSubscriptions;
   }
 }

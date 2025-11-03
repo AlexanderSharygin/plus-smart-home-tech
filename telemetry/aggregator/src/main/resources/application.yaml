@@ -18,5 +18,5 @@ kafka:
     value-deserializer: ru.yandex.practicum.kafka.deserializer.SensorEventDeserializer
 
   topics:
-    consumer-subscription: telemetry.sensors.v1
+    consumer-subscriptions: telemetry.sensors.v1
     producer-topic: telemetry.snapshots.v1
