@@ -2,6 +2,7 @@ package ru.yandex.practicum.telemetry.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.telemetry.repository.SnapshotInMemoryRepository;
 import ru.yandex.practicum.telemetry.repository.SnapshotRepository;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorStateAvro;
@@ -15,7 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SnapshotServiceImpl implements SnapshotService {
 
-    private final SnapshotRepository snapshotRepository;
+    private final SnapshotInMemoryRepository snapshotRepository;
 
     @Override
     public Optional<SensorsSnapshotAvro> updateState(SensorEventAvro event) {
