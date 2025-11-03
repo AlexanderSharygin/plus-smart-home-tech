@@ -20,14 +20,14 @@ import java.util.Properties;
 @Slf4j
 public class KafkaProducerConfig {
 
-  private String bootstrapServers;
+  private String uri;
   private String keySerializer;
   private String valueSerializer;
 
   @Bean
   public KafkaProducer<String, SensorsSnapshotAvro> kafkaProducer() {
     Properties config = new Properties();
-    config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+    config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, uri);
     config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerializer);
     config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, valueSerializer);
     return new KafkaProducer<>(config);

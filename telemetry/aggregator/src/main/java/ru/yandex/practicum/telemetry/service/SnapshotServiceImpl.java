@@ -15,46 +15,51 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SnapshotServiceImpl implements SnapshotService {
 
-    private final SnapshotRepository snapshotRepository;
+
+    private final SnapshotRepository snapshots;
+
 
     @Override
-    public Optional<SensorsSnapshotAvro> updateState(SensorEventAvro event) {
+    public Optional<SensorsSnapshotAvro> updateState(final SensorEventAvro event) {
 
-        SensorsSnapshotAvro snapshot = snapshotRepository.findByHubId(event.getHubId())
-                .orElseGet(() -> createSnapshot(event));
-        if (isSnapshotShouldBeUpdated(snapshot, event)) {
-            Instant updateTimeStamp = event.getTimestamp();
-            SensorStateAvro updatedState = SensorStateAvro.newBuilder().
-                    setTimestamp(updateTimeStamp)
-                    .setData(event.getPayload()).build();
-            snapshot.getSensorsState().put(event.getId(), updatedState);
-            snapshot.setTimestamp(updateTimeStamp);
-            snapshotRepository.save(snapshot);
 
-            return Optional.of(snapshot);
+        final SensorsSnapshotAvro snapshot = snapshots.findByHubId(event.getHubId())
+                .orElseGet(() -> buildSnapshot(event));
+
+        if (isCurrentSnapshotValid(snapshot, event)) {
+
+            return Optional.empty();
         }
-        return Optional.empty();
+
+        updateSnapshotData(snapshot, event);
+
+        snapshots.save(snapshot);
+        return Optional.of(snapshot);
     }
 
-    private boolean isSnapshotShouldBeUpdated(SensorsSnapshotAvro currentSnapshot, SensorEventAvro event) {
-        SensorStateAvro currentState = currentSnapshot.getSensorsState().get(event.getId());
+    private void updateSnapshotData(final SensorsSnapshotAvro snapshot, final SensorEventAvro event) {
+
+        final SensorStateAvro newState = SensorStateAvro.newBuilder()
+                .setTimestamp(event.getTimestamp())
+                .setData(event.getPayload())
+                .build();
+
+        snapshot.getSensorsState().put(event.getId(), newState);
+        snapshot.setTimestamp(event.getTimestamp());
+    }
+
+    private boolean isCurrentSnapshotValid(final SensorsSnapshotAvro currentSnapshot,
+                                           final SensorEventAvro event) {
+
+        final SensorStateAvro currentState = currentSnapshot.getSensorsState().get(event.getId());
 
         return currentState != null &&
                 (!currentState.getTimestamp().isBefore(event.getTimestamp()) ||
                         currentState.getData().equals(event.getPayload()));
-
-        /*  SensorStateAvro state = currentSnapshot.getSensorsState().get(event.getId());
-        if (state == null) {
-            return false;
-        }
-        if (event.getTimestamp().isAfter(state.getTimestamp())) {
-            return !state.getData().equals(event.getPayload());
-        } else {
-            return false;
-        }*/
     }
 
-    private SensorsSnapshotAvro createSnapshot(SensorEventAvro event) {
+    private SensorsSnapshotAvro buildSnapshot(final SensorEventAvro event) {
+
         return SensorsSnapshotAvro.newBuilder()
                 .setHubId(event.getHubId())
                 .setTimestamp(event.getTimestamp())

@@ -24,10 +24,39 @@ import java.util.Optional;
 @Service
 public class AggregationStarter {
 
+
     private final KafkaProducer<String, SensorsSnapshotAvro> producer;
     private final KafkaConsumer<String, SensorEventAvro> consumer;
     private final SnapshotService snapshotService;
     private final KafkaTopicConfig topics;
+
+    public void start() {
+        log.debug("Starting aggregation process.");
+        try {
+            Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
+
+            consumer.subscribe(topics.getConsumerSubscriptions());
+            log.info("Subscribed for the topic: {}", topics.getConsumerSubscriptions());
+
+            while (true) {
+                ConsumerRecords<String, SensorEventAvro> records = consumer.poll(Duration.ofMillis(1000));
+                if (!records.isEmpty()) {
+
+                    for (ConsumerRecord<String, SensorEventAvro> record : records) {
+                        processRecord(record);
+                    }
+                    consumer.commitSync();
+                }
+            }
+        } catch (WakeupException ignored) {
+            log.warn("WakeupException caught - Consumer shutting down.");
+        } catch (Exception e) {
+            log.error("Error during event processing", e);
+        } finally {
+            cleanupResources();
+        }
+
+    }
 
 
     private void processRecord(final ConsumerRecord<String, SensorEventAvro> record) {
@@ -39,6 +68,7 @@ public class AggregationStarter {
                 record.value());
         updatedSnapshot.ifPresent(this::sendSnapshotToKafka);
     }
+
 
     private void sendSnapshotToKafka(final SensorsSnapshotAvro snapshot) {
         log.info("Sending snapshot to Kafka: hubId={}", snapshot.getHubId());
@@ -55,47 +85,21 @@ public class AggregationStarter {
         });
     }
 
-    public void start() {
+
+    private void cleanupResources() {
         try {
-            Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
-            consumer.subscribe(topics.getConsumerSubscriptions());
+            log.info("Flushing producer buffer.");
+            producer.flush();
 
-            while (true) {
-                ConsumerRecords<String, SensorEventAvro> records = consumer.poll(Duration.ofMillis(1000));
-                if (!records.isEmpty()) {
-
-                    for (ConsumerRecord<String, SensorEventAvro> record : records) {
-                        processRecord(record);
-                    }
-                    consumer.commitSync();
-                }
-            }
-
-        } catch (WakeupException ignored) {
+            log.info("Committing consumer offsets synchronously.");
+            consumer.commitSync();
         } catch (Exception e) {
-            log.error("Ошибка во время обработки событий от датчиков", e);
+            log.error("Error during resource cleanup", e);
         } finally {
-            try {
-                producer.flush();
-                consumer.commitSync();
-            } catch (Exception e) {
-                log.error("Ошибка во время освобождения ресурсов", e);
-            } finally {
-                log.info("Закрываем консьюмер");
-                consumer.close();
-                log.info("Закрываем продюсер");
-                producer.close();
-            }
+            log.info("Closing Kafka consumer.");
+            consumer.close();
+            log.info("Closing Kafka producer.");
+            producer.close();
         }
-    }
-
-    private void sendSnapshot(SensorsSnapshotAvro snapshot) {
-        ProducerRecord<String, SensorsSnapshotAvro> record =
-                new ProducerRecord<>(topics.getProducerTopic(), snapshot.getHubId(), snapshot);
-        producer.send(record, (metadata, exception) -> {
-            if (exception != null) {
-                log.error("Ошибка во время отправки сообщения в топик + {}", topics.producerTopic());
-            }
-        });
     }
 }
