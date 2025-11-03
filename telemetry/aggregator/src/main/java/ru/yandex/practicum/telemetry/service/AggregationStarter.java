@@ -16,6 +16,7 @@ import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 
 import java.io.Serial;
 import java.time.Duration;
+import java.util.Optional;
 
 @Setter
 @RequiredArgsConstructor
@@ -29,6 +30,31 @@ public class AggregationStarter {
     private final KafkaTopicConfig topics;
 
 
+    private void processRecord(final ConsumerRecord<String, SensorEventAvro> record) {
+        log.info(
+                "Processing  ConsumerRecord: topic={}, partition={}, offset={}, hubId={}, timestamp={}",
+                record.topic(), record.partition(), record.offset(), record.key(), record.timestamp());
+
+        final Optional<SensorsSnapshotAvro> updatedSnapshot = snapshotService.updateState(
+                record.value());
+        updatedSnapshot.ifPresent(this::sendSnapshotToKafka);
+    }
+
+    private void sendSnapshotToKafka(final SensorsSnapshotAvro snapshot) {
+        log.info("Sending snapshot to Kafka: hubId={}", snapshot.getHubId());
+
+        final ProducerRecord<String, SensorsSnapshotAvro> record =
+                new ProducerRecord<>(topics.getProducerTopic(), snapshot.getHubId(), snapshot);
+        producer.send(record, (metadata, exception) -> {
+            if (exception != null) {
+                log.error("Failed to send snapshot to Kafka", exception);
+            } else {
+                log.info("Snapshot sent successfully to the topic {} at offset {}", metadata.topic(),
+                        metadata.offset());
+            }
+        });
+    }
+
     public void start() {
         try {
             Runtime.getRuntime().addShutdownHook(new Thread(consumer::wakeup));
@@ -36,13 +62,13 @@ public class AggregationStarter {
 
             while (true) {
                 ConsumerRecords<String, SensorEventAvro> records = consumer.poll(Duration.ofMillis(1000));
-                if (records.isEmpty()) {
-                    continue;
+                if (!records.isEmpty()) {
+
+                    for (ConsumerRecord<String, SensorEventAvro> record : records) {
+                        processRecord(record);
+                    }
+                    consumer.commitSync();
                 }
-                for (ConsumerRecord<String, SensorEventAvro> record : records) {
-                    snapshotService.updateState(record.value()).ifPresent(this::sendSnapshot);
-                }
-                consumer.commitSync();
             }
 
         } catch (WakeupException ignored) {
