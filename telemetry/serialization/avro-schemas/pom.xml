@@ -29,7 +29,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <scope>LATEST</scope>
+            <version>LATEST</version>
         </dependency>
 
     </dependencies>
