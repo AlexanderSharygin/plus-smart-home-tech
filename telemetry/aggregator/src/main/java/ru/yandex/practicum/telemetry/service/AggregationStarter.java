@@ -9,15 +9,18 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.errors.WakeupException;
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.telemetry.config.KafkaTopicConfig;
 import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.SensorsSnapshotAvro;
 
+import java.io.Serial;
 import java.time.Duration;
 
 @Setter
 @RequiredArgsConstructor
 @Slf4j
+@Service
 public class AggregationStarter {
 
     private final KafkaProducer<String, SensorsSnapshotAvro> producer;

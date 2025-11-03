@@ -1,4 +1,4 @@
-package ru.yandex.practicum.kafka.serializer;
+package ru.yandex.practicum.kafka.deserializer;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.Schema;
