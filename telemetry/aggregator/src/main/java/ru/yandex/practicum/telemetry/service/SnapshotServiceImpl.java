@@ -37,7 +37,13 @@ public class SnapshotServiceImpl implements SnapshotService {
     }
 
     private boolean isSnapshotShouldBeUpdated(SensorsSnapshotAvro currentSnapshot, SensorEventAvro event) {
-        SensorStateAvro state = currentSnapshot.getSensorsState().get(event.getId());
+        SensorStateAvro currentState = currentSnapshot.getSensorsState().get(event.getId());
+
+        return currentState != null &&
+                (!currentState.getTimestamp().isBefore(event.getTimestamp()) ||
+                        currentState.getData().equals(event.getPayload()));
+
+        /*  SensorStateAvro state = currentSnapshot.getSensorsState().get(event.getId());
         if (state == null) {
             return false;
         }
@@ -45,7 +51,7 @@ public class SnapshotServiceImpl implements SnapshotService {
             return !state.getData().equals(event.getPayload());
         } else {
             return false;
-        }
+        }*/
     }
 
     private SensorsSnapshotAvro createSnapshot(SensorEventAvro event) {
