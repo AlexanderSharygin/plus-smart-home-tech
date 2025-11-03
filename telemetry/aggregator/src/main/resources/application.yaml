@@ -13,7 +13,7 @@ kafka:
     uri: localhost:9092
     group-id: telemetry.aggregator
     auto-offset-reset: earliest
-    enable-auto-commit: false
+    enable-auto-commit: true
     key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     value-deserializer: ru.yandex.practicum.kafka.deserializer.SensorEventDeserializer
 
