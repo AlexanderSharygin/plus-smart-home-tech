@@ -71,6 +71,9 @@ public class SnapshotServiceImpl implements SnapshotService {
 
 
         SensorStateAvro currentState = currentSnapshot.getSensorsState().get(event.getId());
+        if (currentState == null) {
+            return false;
+        }
         if (event.getTimestamp().isBefore(currentState.getTimestamp())) {
             return true;
         }
