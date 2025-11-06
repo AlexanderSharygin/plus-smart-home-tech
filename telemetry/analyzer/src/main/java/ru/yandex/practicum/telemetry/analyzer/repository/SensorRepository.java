@@ -12,6 +12,4 @@ public interface SensorRepository extends JpaRepository<Sensor, String> {
     void deleteSensorByIdAndHubId(String id, String hubId);
 
     boolean existsSensorsByIdInAndHubId(Collection<String> ids, String hubId);
-
-    Optional<Sensor> findByIdAndHubId(String id, String hubId);
 }

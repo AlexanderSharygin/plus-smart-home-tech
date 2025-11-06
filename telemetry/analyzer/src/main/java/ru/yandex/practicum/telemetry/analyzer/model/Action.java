@@ -21,21 +21,18 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "actions")
-@EqualsAndHashCode(of = {"id"})
 @Builder
 @SecondaryTable(name = "scenario_actions", pkJoinColumns = @PrimaryKeyJoinColumn(name = "action_id"))
+@Table(name = "actions")
 public class Action {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "type", nullable = false)
   @Enumerated(EnumType.STRING)
   private ActionTypeAvro type;
 
-  @Column(name = "value")
   private Integer value;
 
   @ManyToOne

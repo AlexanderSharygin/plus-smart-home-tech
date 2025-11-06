@@ -22,19 +22,18 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "scenarios", uniqueConstraints = @UniqueConstraint(columnNames = {"hub_id", "name"}))
-@EqualsAndHashCode(of = {"id", "hubId", "name"})
 @Builder
+@Table(name = "scenarios")
 public class Scenario {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "hub_id", nullable = false)
+  @Column(name = "hub_id")
   private String hubId;
 
-  @Column(name = "name", nullable = false)
+
   private String name;
 
 }

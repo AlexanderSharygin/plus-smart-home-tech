@@ -22,7 +22,6 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "conditions")
-@EqualsAndHashCode(of = "id")
 @Builder
 @SecondaryTable(name = "scenario_conditions", pkJoinColumns = @PrimaryKeyJoinColumn(name = "condition_id"))
 public class Condition {
@@ -31,16 +30,12 @@ public class Condition {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-
-  @Column(name = "type", nullable = false)
   @Enumerated(EnumType.STRING)
   private ConditionTypeAvro type;
 
-  @Column(name = "operation", nullable = false)
   @Enumerated(EnumType.STRING)
   private ConditionOperationAvro operation;
 
-  @Column(name = "value", nullable = false)
   private Integer value;
 
   @ManyToOne

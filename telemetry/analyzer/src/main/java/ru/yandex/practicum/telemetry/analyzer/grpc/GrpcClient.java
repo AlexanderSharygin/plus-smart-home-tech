@@ -5,6 +5,8 @@ import com.google.protobuf.Timestamp;
 import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.grpc.telemetry.event.ActionTypeProto;
 import ru.yandex.practicum.grpc.telemetry.event.DeviceActionProto;
@@ -22,6 +24,9 @@ public class GrpcClient {
     @net.devh.boot.grpc.client.inject.GrpcClient("hub-router")
     HubRouterControllerGrpc.HubRouterControllerBlockingStub hubRouterClient;
 
+    @Retryable(value = {StatusRuntimeException.class},
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 1000))
     public void sendRequest(Action action) {
         try {
             DeviceActionRequest deviceActionRequest = buildActionRequest(action);
@@ -29,7 +34,8 @@ public class GrpcClient {
             Empty res = hubRouterClient.handleDeviceAction(deviceActionRequest);
             log.info("Действие отправлено в HubRouter: {}", deviceActionRequest);
         } catch (StatusRuntimeException e) {
-            log.error("Ошибка отправки в HubRouter. Статус: {}, Описание: {}",
+            log.error("Ошибка отправки в HubRouter. Действие: {}:,  Статус: {}, Описание: {}",
+                    buildActionRequest(action),
                     e.getStatus().getCode(),
                     e.getStatus().getDescription(), e);
             throw new RuntimeException("Не удалось отправить действие в HubRouter", e);

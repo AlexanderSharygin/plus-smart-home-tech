@@ -114,9 +114,9 @@ public class SnapshotHandler {
             actions.forEach(action -> {
                 try {
                     grpcClient.sendRequest(action);
-                    log.debug("Действие: {}, успешно отправлено", action);
+                    log.debug("Действие: {}, успешно отправлено", action.getType());
                 } catch (Exception e) {
-                    log.error("Ошибка отправки действия  {}", action, e);
+                    log.error("Ошибка отправки действия  {}", action.getType(), e);
                 }
             });
         } catch (Exception e) {

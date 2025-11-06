@@ -8,7 +8,7 @@ spring:
     password: "admin"
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create-drop
     show-sql: true
     properties:
       dialect: org.hibernate.dialect.PostgreSQL10Dialect
@@ -33,7 +33,7 @@ kafka:
       group-id: telemetry.analyzer.hub
       auto-offset-reset: earliest
       enable-auto-commit: false
-      consume-attempt-timeout-ms: 3000
+      consume-attempt-timeout-ms: 2000
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: ru.yandex.practicum.kafka.deserializer.HubEventDeserializer
 
