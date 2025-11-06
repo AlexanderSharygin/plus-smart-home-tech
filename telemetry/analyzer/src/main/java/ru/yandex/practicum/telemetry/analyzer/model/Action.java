@@ -24,6 +24,7 @@ import java.util.Set;
 @Table(name = "actions")
 @EqualsAndHashCode(of = {"id"})
 @Builder
+@SecondaryTable(name = "scenario_actions", pkJoinColumns = @PrimaryKeyJoinColumn(name = "action_id"))
 public class Action {
 
   @Id

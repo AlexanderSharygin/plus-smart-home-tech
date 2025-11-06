@@ -16,16 +16,6 @@ import java.util.List;
 @Slf4j
 public class KafkaTopicConfig {
 
-  private String snapshots;
-  private String hubs;
-
-  @Bean
-  public String producerTopic() {
-    return hubs;
-  }
-
-  @Bean
-  public String consumerTopic() {
-    return snapshots;
-  }
+  private List<String> snapshots;
+  private List<String> hubs;
 }

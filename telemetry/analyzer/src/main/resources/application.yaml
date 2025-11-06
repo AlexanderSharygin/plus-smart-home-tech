@@ -38,8 +38,10 @@ kafka:
       value-deserializer: ru.yandex.practicum.kafka.deserializer.HubEventDeserializer
 
   topics:
-    snapshots: telemetry.snapshots.v1
-    hubs: telemetry.hubs.v1
+    snapshots:
+      -telemetry.snapshots.v1
+    hubs:
+      -telemetry.hubs.v1
 
 grpc:
   client:

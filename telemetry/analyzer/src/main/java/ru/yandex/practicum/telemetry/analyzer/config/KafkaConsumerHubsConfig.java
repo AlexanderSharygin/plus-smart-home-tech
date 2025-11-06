@@ -9,7 +9,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
-import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
 
 import java.util.Properties;
 
@@ -24,12 +23,12 @@ public class KafkaConsumerHubsConfig {
   private String groupId;
   private String autoOffsetReset;
   private boolean enableAutoCommit;
-  private String consumeAttemptTimeoutMs;
+  private Long consumeAttemptTimeoutMs;
   private String keyDeserializer;
   private String valueDeserializer;
 
   @Bean
-  public KafkaConsumer<String, HubEventAvro> kafkaConsumer() {
+  public KafkaConsumer<String, HubEventAvro> kafkaHubsConsumer() {
     Properties config = new Properties();
     config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, uri);
     config.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
