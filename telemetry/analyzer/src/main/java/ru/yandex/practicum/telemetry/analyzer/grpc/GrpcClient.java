@@ -1,5 +1,6 @@
 package ru.yandex.practicum.telemetry.analyzer.grpc;
 
+import com.google.protobuf.Empty;
 import com.google.protobuf.Timestamp;
 import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +26,8 @@ public class GrpcClient {
         try {
             DeviceActionRequest deviceActionRequest = buildActionRequest(action);
             log.info("Отправка действия в HubRouter: {}", deviceActionRequest);
-            hubRouterClient.handleDeviceAction(deviceActionRequest);
-            log.info("Действие отправлено в HubRouter");
+            Empty res = hubRouterClient.handleDeviceAction(deviceActionRequest);
+            log.info("Действие отправлено в HubRouter: {}", deviceActionRequest);
         } catch (StatusRuntimeException e) {
             log.error("Ошибка отправки в HubRouter. Статус: {}, Описание: {}",
                     e.getStatus().getCode(),

@@ -33,15 +33,15 @@ kafka:
       group-id: telemetry.analyzer.hub
       auto-offset-reset: earliest
       enable-auto-commit: false
-      consume-attempt-timeout-ms: 10000
+      consume-attempt-timeout-ms: 3000
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: ru.yandex.practicum.kafka.deserializer.HubEventDeserializer
 
   topics:
     snapshots:
-      -telemetry.snapshots.v1
+      - telemetry.snapshots.v1
     hubs:
-      -telemetry.hubs.v1
+      - telemetry.hubs.v1
 
 grpc:
   client:
