@@ -1,21 +1,9 @@
 package ru.yandex.practicum.telemetry.analyzer.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import ru.yandex.practicum.kafka.telemetry.event.ActionTypeAvro;
 
-import java.util.HashSet;
-import java.util.Set;
-
-/**
- * Represents an action to perform as part of a scenario.
- */
 @Entity
 @Getter
 @Setter
@@ -26,21 +14,31 @@ import java.util.Set;
 @Table(name = "actions")
 public class Action {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Enumerated(EnumType.STRING)
-  private ActionTypeAvro type;
+    @Enumerated(EnumType.STRING)
+    private ActionTypeAvro type;
 
-  private Integer value;
+    private Integer value;
 
-  @ManyToOne
-  @JoinColumn(name = "scenario_id", table = "scenario_actions")
-  private Scenario scenario;
+    @ManyToOne
+    @JoinColumn(name = "scenario_id", table = "scenario_actions")
+    private Scenario scenario;
 
-  @ManyToOne
-  @JoinColumn(name = "sensor_id", table = "scenario_actions")
-  private Sensor sensor;
+    @ManyToOne
+    @JoinColumn(name = "sensor_id", table = "scenario_actions")
+    private Sensor sensor;
 
+    @Override
+    public String toString() {
+        return "Action{" +
+                "id=" + id +
+                ", type=" + type +
+                ", value=" + value +
+                ", scenario=" + scenario +
+                ", sensor=" + sensor +
+                '}';
+    }
 }

@@ -2,14 +2,12 @@ package ru.yandex.practicum.telemetry.analyzer.handler.hub;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.DeviceAddedEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 import ru.yandex.practicum.telemetry.analyzer.model.Sensor;
 import ru.yandex.practicum.telemetry.analyzer.repository.SensorRepository;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class DeviceAddedHandler implements HubEventHandler {
@@ -19,9 +17,7 @@ public class DeviceAddedHandler implements HubEventHandler {
     @Override
     @Transactional
     public void handle(HubEventAvro event) {
-        log.info("Добавление устройства из хаба: {}", event.getHubId());
-        Sensor savedSensor = sensorRepository.save(buildSensor(event));
-        log.info("Устройство добавлено. Присвоено ID: {}", savedSensor.getId());
+        sensorRepository.save(buildSensor(event));
     }
 
     @Override
@@ -32,9 +28,6 @@ public class DeviceAddedHandler implements HubEventHandler {
     private Sensor buildSensor(HubEventAvro hubEvent) {
         DeviceAddedEventAvro deviceAddedEvent = (DeviceAddedEventAvro) hubEvent.getPayload();
 
-        return Sensor.builder()
-                .id(deviceAddedEvent.getId())
-                .hubId(hubEvent.getHubId())
-                .build();
+        return Sensor.builder().id(deviceAddedEvent.getId()).hubId(hubEvent.getHubId()).build();
     }
 }

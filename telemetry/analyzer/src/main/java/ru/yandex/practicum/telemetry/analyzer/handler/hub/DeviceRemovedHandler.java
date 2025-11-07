@@ -2,13 +2,11 @@ package ru.yandex.practicum.telemetry.analyzer.handler.hub;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.DeviceRemovedEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
 import ru.yandex.practicum.telemetry.analyzer.repository.SensorRepository;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class DeviceRemovedHandler implements HubEventHandler {
@@ -18,10 +16,8 @@ public class DeviceRemovedHandler implements HubEventHandler {
     @Override
     @Transactional
     public void handle(HubEventAvro event) {
-        log.info("Удаления устройства из хаба: {}", event.getHubId());
         DeviceRemovedEventAvro deviceRemovedEvent = (DeviceRemovedEventAvro) event.getPayload();
         sensorRepository.deleteSensorByIdAndHubId(deviceRemovedEvent.getId(), event.getHubId());
-        log.info("Устройство с id: {} удалено из хаба: {}", deviceRemovedEvent.getId(), event.getHubId());
     }
 
     @Override

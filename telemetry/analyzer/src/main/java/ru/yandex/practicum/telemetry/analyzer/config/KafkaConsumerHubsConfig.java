@@ -19,28 +19,28 @@ import java.util.Properties;
 @Slf4j
 public class KafkaConsumerHubsConfig {
 
-  private String uri;
-  private String groupId;
-  private String autoOffsetReset;
-  private boolean enableAutoCommit;
-  private Long consumeAttemptTimeoutMs;
-  private String keyDeserializer;
-  private String valueDeserializer;
+    private String uri;
+    private String groupId;
+    private String autoOffsetReset;
+    private boolean enableAutoCommit;
+    private Long consumeAttemptTimeoutMs;
+    private String keyDeserializer;
+    private String valueDeserializer;
 
-  @Bean
-  public KafkaConsumer<String, HubEventAvro> kafkaHubsConsumer() {
-    Properties config = new Properties();
-    config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, uri);
-    config.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
-    config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, enableAutoCommit);
-    config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyDeserializer);
-    config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, valueDeserializer);
-    config.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 15000);
-    config.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 5000);
-    config.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 300000);
-    config.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 10);
-    config.put(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, 30000);
+    @Bean
+    public KafkaConsumer<String, HubEventAvro> kafkaHubsConsumer() {
+        Properties config = new Properties();
+        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, uri);
+        config.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+        config.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, enableAutoCommit);
+        config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyDeserializer);
+        config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, valueDeserializer);
+        config.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 15000);
+        config.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 5000);
+        config.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 300000);
+        config.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 10);
+        config.put(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, 30000);
 
-    return new KafkaConsumer<>(config);
-  }
+        return new KafkaConsumer<>(config);
+    }
 }

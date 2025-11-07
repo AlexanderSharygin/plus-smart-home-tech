@@ -25,32 +25,27 @@ public class SnapshotHandler {
     private final GrpcClient grpcClient;
 
     public void buildSnapshot(SensorsSnapshotAvro sensorsSnapshot) {
-        log.info("Начало обработки снапшота для хаба {}", sensorsSnapshot.getHubId());
-
         try {
             Map<String, SensorStateAvro> sensorStateMap = sensorsSnapshot.getSensorsState();
             List<Scenario> scenarios = scenarioRepository.findScenariosByHubId(sensorsSnapshot.getHubId());
-
             scenarios.forEach(scenario -> {
-                if (handleScenario(scenario, sensorStateMap)) {
-                    log.info("Условия сценария '{}' выполнены", scenario.getName());
+                if (isScenarioConditionsMet(scenario, sensorStateMap)) {
                     sendScenarioActions(scenario);
                 }
             });
-        } catch (Exception e) {
-            log.error("Ошибка обработки снапшота", e);
+        } catch (RuntimeException e) {
+            log.error("Ошибка во время обработки snapshot", e);
         }
     }
 
-    private boolean handleScenario(Scenario scenario, Map<String, SensorStateAvro> sensorStateMap) {
+    private boolean isScenarioConditionsMet(Scenario scenario, Map<String, SensorStateAvro> sensorsStates) {
         List<Condition> conditions = conditionRepository.findConditionsByScenario(scenario);
-        return conditions.stream()
-                .allMatch(condition -> checkCondition(condition, sensorStateMap));
+        return conditions.stream().allMatch(condition -> checkCondition(condition, sensorsStates));
     }
 
-    private boolean checkCondition(Condition condition, Map<String, SensorStateAvro> sensorStateMap) {
+    private boolean checkCondition(Condition condition, Map<String, SensorStateAvro> sensorsStates) {
         String sensorId = condition.getSensor().getId();
-        SensorStateAvro sensorState = sensorStateMap.get(sensorId);
+        SensorStateAvro sensorState = sensorsStates.get(sensorId);
         if (sensorState == null) {
             return false;
         }
@@ -58,27 +53,27 @@ public class SnapshotHandler {
         switch (condition.getType()) {
             case LUMINOSITY -> {
                 LightSensorAvro lightSensor = (LightSensorAvro) sensorState.getData();
-                return Boolean.TRUE.equals(handleOperation(condition, lightSensor.getLuminosity()));
+                return handleOperation(condition, lightSensor.getLuminosity());
             }
             case TEMPERATURE -> {
                 ClimateSensorAvro temperatureSensor = (ClimateSensorAvro) sensorState.getData();
-                return Boolean.TRUE.equals(handleOperation(condition, temperatureSensor.getTemperatureC()));
+                return handleOperation(condition, temperatureSensor.getTemperatureC());
             }
             case MOTION -> {
                 MotionSensorAvro motionSensor = (MotionSensorAvro) sensorState.getData();
-                return Boolean.TRUE.equals(handleOperation(condition, motionSensor.getMotion() ? 1 : 0));
+                return handleOperation(condition, motionSensor.getMotion() ? 1 : 0);
             }
             case SWITCH -> {
                 SwitchSensorAvro switchSensor = (SwitchSensorAvro) sensorState.getData();
-                return Boolean.TRUE.equals(handleOperation(condition, switchSensor.getState() ? 1 : 0));
+                return handleOperation(condition, switchSensor.getState() ? 1 : 0);
             }
             case CO2LEVEL -> {
                 ClimateSensorAvro climateSensor = (ClimateSensorAvro) sensorState.getData();
-                return Boolean.TRUE.equals(handleOperation(condition, climateSensor.getCo2Level()));
+                return handleOperation(condition, climateSensor.getCo2Level());
             }
             case HUMIDITY -> {
                 ClimateSensorAvro climateSensor = (ClimateSensorAvro) sensorState.getData();
-                return Boolean.TRUE.equals(handleOperation(condition, climateSensor.getHumidity()));
+                return handleOperation(condition, climateSensor.getHumidity());
             }
             case null -> {
                 return false;
@@ -86,7 +81,7 @@ public class SnapshotHandler {
         }
     }
 
-    private Boolean handleOperation(Condition condition, Integer currentValue) {
+    private boolean handleOperation(Condition condition, Integer currentValue) {
         ConditionOperationAvro conditionOperation = condition.getOperation();
         Integer targetValue = condition.getValue();
 
@@ -100,8 +95,8 @@ public class SnapshotHandler {
             case GREATER_THAN -> {
                 return currentValue > targetValue;
             }
-            case null -> {
-                return null;
+            default -> {
+                return false;
             }
         }
     }
@@ -109,18 +104,15 @@ public class SnapshotHandler {
     private void sendScenarioActions(Scenario scenario) {
         try {
             List<Action> actions = actionRepository.findActionsByScenario(scenario);
-            log.info("Отправка {} действий для сценария {}", actions.size(), scenario.getName());
-
             actions.forEach(action -> {
                 try {
                     grpcClient.sendRequest(action);
-                    log.debug("Действие: {}, успешно отправлено", action.getType());
                 } catch (Exception e) {
-                    log.error("Ошибка отправки действия  {}", action.getType(), e);
+                    log.error("Ошибка выполнения действия действия:  {}", action.toString(), e);
                 }
             });
         } catch (Exception e) {
-            log.error("Ошибка получения действий для сценария {}", scenario.getName(), e);
+            log.error("Ошибка обработки сценария {}", scenario.toString(), e);
         }
     }
 }

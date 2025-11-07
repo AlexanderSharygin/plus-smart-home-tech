@@ -7,5 +7,4 @@ public interface HubEventHandler {
     String getMessageType();
 
     void handle(HubEventAvro event);
-
 }

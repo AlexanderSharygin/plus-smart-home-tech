@@ -1,15 +1,10 @@
 package ru.yandex.practicum.telemetry.analyzer.model;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.util.HashSet;
-import java.util.Set;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.*;
 
 @Entity
 @Getter
@@ -20,9 +15,9 @@ import java.util.Set;
 @Builder
 public class Sensor {
 
-  @Id
-  private String id;
+    @Id
+    private String id;
 
-  @Column(name = "hub_id", nullable = false)
-  private String hubId;
+    @Column(name = "hub_id", nullable = false)
+    private String hubId;
 }
