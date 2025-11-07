@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
@@ -16,6 +15,6 @@ import java.util.List;
 @Slf4j
 public class KafkaTopicConfig {
 
-  private List<String> snapshots;
-  private List<String> hubs;
+    private List<String> snapshots;
+    private List<String> hubs;
 }
