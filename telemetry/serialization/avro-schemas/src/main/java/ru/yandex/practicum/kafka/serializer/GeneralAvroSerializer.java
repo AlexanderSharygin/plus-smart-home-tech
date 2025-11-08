@@ -12,19 +12,20 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class GeneralAvroSerializer implements Serializer<SpecificRecordBase> {
-
   private final EncoderFactory encoderFactory = EncoderFactory.get();
   private BinaryEncoder encoder;
 
   public byte[] serialize(String topic, SpecificRecordBase data) {
     try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+      byte[] result = null;
+      encoder = encoderFactory.binaryEncoder(out, encoder);
       if (data != null) {
         DatumWriter<SpecificRecordBase> writer = new SpecificDatumWriter<>(data.getSchema());
-        encoder = encoderFactory.binaryEncoder(out, encoder);
         writer.write(data, encoder);
         encoder.flush();
+        result = out.toByteArray();
       }
-      return out.toByteArray();
+      return result;
     } catch (IOException ex) {
       throw new SerializationException("Ошибка сериализации данных для топика [" + topic + "]", ex);
     }
