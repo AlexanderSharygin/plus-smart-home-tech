@@ -1,6 +1,5 @@
 package ru.yandex.practicum.telemetry.config;
 
-import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -12,21 +11,21 @@ import java.util.List;
 
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "kafka.topics")
+@ConfigurationProperties("kafka.topics")
 @Configuration
 @Slf4j
 public class KafkaTopicConfig {
 
-  private List<String> consumerSubscriptions;
-  private String producerTopic;
+    private List<String> consumerSubscriptions;
+    private String producerTopic;
 
-  @Bean
-  public String producerTopic() {
-    return producerTopic;
-  }
+    @Bean
+    public String producerTopic() {
+        return producerTopic;
+    }
 
-  @Bean
-  public List<String> consumerTopic() {
-    return consumerSubscriptions;
-  }
+    @Bean
+    public List<String> consumerTopic() {
+        return consumerSubscriptions;
+    }
 }
