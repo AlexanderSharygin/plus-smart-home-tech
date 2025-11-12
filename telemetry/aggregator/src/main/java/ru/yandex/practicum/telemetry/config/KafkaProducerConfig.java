@@ -1,6 +1,5 @@
 package ru.yandex.practicum.telemetry.config;
 
-import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -15,22 +14,22 @@ import java.util.Properties;
 
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "kafka.producer")
+@ConfigurationProperties("kafka.producer")
 @Configuration
 @Slf4j
 public class KafkaProducerConfig {
 
-  private String uri;
-  private String keySerializer;
-  private String valueSerializer;
+    private String uri;
+    private String keySerializer;
+    private String valueSerializer;
 
-  @Bean
-  public KafkaProducer<String, SensorsSnapshotAvro> kafkaProducer() {
-    Properties config = new Properties();
-    config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, uri);
-    config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerializer);
-    config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, valueSerializer);
-    return new KafkaProducer<>(config);
-  }
+    @Bean
+    public KafkaProducer<String, SensorsSnapshotAvro> kafkaProducer() {
+        Properties config = new Properties();
+        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, uri);
+        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keySerializer);
+        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, valueSerializer);
+        return new KafkaProducer<>(config);
+    }
 }
 

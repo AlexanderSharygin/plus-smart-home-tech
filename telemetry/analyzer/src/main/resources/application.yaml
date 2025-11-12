@@ -1,54 +1,14 @@
 spring:
   application:
     name: analyzer
-  datasource:
-    driverClassName: org.postgresql.Driver
-    url: "jdbc:postgresql://localhost:5432/analyzer"
-    username: "admin"
-    password: "admin"
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: true
-    properties:
-      dialect: org.hibernate.dialect.PostgreSQL10Dialect
-      hibernate:
-        jdbc:
-          time_zone: UTC
-        format_sql: true
 
-
-kafka:
-  consumers:
-    snapshots:
-      uri: localhost:9092
-      group-id: telemetry.analyzer.snapshot
-      auto-offset-reset: earliest
-      enable-auto-commit: false
-      consume-attempt-timeout-ms: 1000
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: ru.yandex.practicum.kafka.deserializer.SensorsSnapshotDeserializer
-    hubs:
-      uri: localhost:9092
-      group-id: telemetry.analyzer.hub
-      auto-offset-reset: earliest
-      enable-auto-commit: false
-      consume-attempt-timeout-ms: 2000
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: ru.yandex.practicum.kafka.deserializer.HubEventDeserializer
-
-  topics:
-    snapshots:
-      - telemetry.snapshots.v1
-    hubs:
-      - telemetry.hubs.v1
-
-grpc:
-  client:
-    hub-router:
-      address: 'static://localhost:59090'
-      enableKeepAlive: true
-      keepAliveWithoutCalls: true
-      negotiationType: plaintext
+  config:
+    import: configserver:http://localhost:8888
+  cloud:
+    config:
+      fail-fast: true
+      retry:
+        useRandomPolicy: true
+        max-interval: 6000
 
 

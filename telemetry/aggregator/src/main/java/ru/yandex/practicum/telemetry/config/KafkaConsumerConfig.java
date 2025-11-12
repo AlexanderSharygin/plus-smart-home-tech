@@ -14,7 +14,7 @@ import java.util.Properties;
 
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "kafka.consumer")
+@ConfigurationProperties("kafka.consumer")
 @Configuration
 @Slf4j
 public class KafkaConsumerConfig {
