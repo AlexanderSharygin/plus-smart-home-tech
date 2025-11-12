@@ -16,4 +16,4 @@ spring:
             - classpath:config/telemetry/{application}
 
 server:
-  port: 8888
+  port: 0
