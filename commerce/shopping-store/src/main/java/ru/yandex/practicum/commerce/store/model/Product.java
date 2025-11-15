@@ -1,4 +1,4 @@
-package ru.yandex.practicum.store.model;
+package ru.yandex.practicum.commerce.store.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;

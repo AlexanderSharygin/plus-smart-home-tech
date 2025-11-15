@@ -1,4 +1,4 @@
-package ru.yandex.practicum.store.controller;
+package ru.yandex.practicum.commerce.store.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +11,7 @@ import ru.yandex.practicum.interaction.enums.ProductCategory;
 import ru.yandex.practicum.interaction.dto.ProductDto;
 import ru.yandex.practicum.interaction.dto.SetProductQuantityStateRequest;
 import ru.yandex.practicum.interaction.feign.ShoppingStoreFeignClient;
-import ru.yandex.practicum.store.service.ShoppingStoreService;
+import ru.yandex.practicum.commerce.store.service.ShoppingStoreService;
 
 import java.util.UUID;
 

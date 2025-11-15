@@ -83,7 +83,7 @@
                             <goal>repackage</goal>
                         </goals>
                         <configuration>
-                            <mainClass>ru.yandex.practicum.store.ShoppingStore</mainClass>
+                            <mainClass>ru.yandex.practicum.commerce.store.ShoppingStore</mainClass>
                         </configuration>
                     </execution>
                 </executions>

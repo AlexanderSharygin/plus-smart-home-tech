@@ -1,10 +1,11 @@
-package ru.yandex.practicum.store.service;
+package ru.yandex.practicum.commerce.store.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.interaction.dto.Pageable;
 import ru.yandex.practicum.interaction.dto.ProductDto;
@@ -12,15 +13,16 @@ import ru.yandex.practicum.interaction.dto.SetProductQuantityStateRequest;
 import ru.yandex.practicum.interaction.enums.ProductCategory;
 import ru.yandex.practicum.interaction.enums.ProductState;
 import ru.yandex.practicum.interaction.exception.model.ProductNotFoundException;
-import ru.yandex.practicum.store.model.Product;
-import ru.yandex.practicum.store.model.ProductMapper;
-import ru.yandex.practicum.store.repository.ProductRepository;
+import ru.yandex.practicum.commerce.store.model.Product;
+import ru.yandex.practicum.commerce.store.model.ProductMapper;
+import ru.yandex.practicum.commerce.store.repository.ProductRepository;
 
 import java.util.UUID;
 
 @RequiredArgsConstructor
 @Slf4j
 @Transactional(readOnly = true)
+@Service
 public class ShoppingStoreServiceImpl implements ShoppingStoreService {
 
     private final ProductRepository repository;

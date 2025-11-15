@@ -1,4 +1,4 @@
-package ru.yandex.practicum.store.service;
+package ru.yandex.practicum.commerce.store.service;
 
 import org.springframework.data.domain.Page;
 

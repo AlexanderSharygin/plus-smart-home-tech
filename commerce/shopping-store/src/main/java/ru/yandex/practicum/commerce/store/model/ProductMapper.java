@@ -1,4 +1,4 @@
-package ru.yandex.practicum.store.model;
+package ru.yandex.practicum.commerce.store.model;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.interaction.dto.ProductDto;
