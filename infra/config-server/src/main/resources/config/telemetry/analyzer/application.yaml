@@ -44,9 +44,11 @@ kafka:
       - telemetry.hubs.v1
 
 grpc:
+  server:
+    port: 59092
   client:
     hub-router:
-      address: 'static://localhost:59090'
+      address: 'discovery:///hub-router'
       enableKeepAlive: true
       keepAliveWithoutCalls: true
       negotiationType: plaintext
