@@ -1,3 +1,7 @@
+spring:
+  application:
+    name: aggregator
+
 kafka:
   producer:
     uri: localhost:9092

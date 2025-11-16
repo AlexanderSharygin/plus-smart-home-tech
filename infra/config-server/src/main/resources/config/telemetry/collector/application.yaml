@@ -1,3 +1,13 @@
+spring:
+  application:
+    name: collector
+
+server:
+  port: 8080
+grpc:
+  server:
+    port: 59091
+
 collector:
   kafka:
     uri: localhost:9092
@@ -8,6 +18,4 @@ collector:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: ru.yandex.practicum.kafka.serializer.GeneralAvroSerializer
 
-grpc:
-  server:
-    port: 59091
+
