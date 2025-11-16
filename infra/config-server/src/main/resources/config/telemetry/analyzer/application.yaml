@@ -44,8 +44,6 @@ kafka:
       - telemetry.hubs.v1
 
 grpc:
-  server:
-    port: 59091
   client:
     hub-router:
       address: 'static://localhost:59090'
