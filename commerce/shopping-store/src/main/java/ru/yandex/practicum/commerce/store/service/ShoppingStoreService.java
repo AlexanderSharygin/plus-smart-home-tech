@@ -12,13 +12,13 @@ import java.util.UUID;
 
 public interface ShoppingStoreService {
 
-  ProductDto createNewProduct(ProductDto productDto);
+  ProductDto createProduct(ProductDto productDto);
 
   ProductDto updateProduct(ProductDto productDto);
 
   ProductDto getProductById(UUID productId);
 
-  Page<ProductDto> getProducts(ProductCategory productCategory, Pageable pageable);
+  Page<ProductDto> getProductsByCategory(ProductCategory productCategory, Pageable pageable);
 
   boolean deleteProduct(UUID productId);
 

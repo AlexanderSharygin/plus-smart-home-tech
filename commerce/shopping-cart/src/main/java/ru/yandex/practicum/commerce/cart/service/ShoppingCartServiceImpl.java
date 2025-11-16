@@ -10,13 +10,10 @@ import ru.yandex.practicum.commerce.cart.repository.CartRepository;
 import ru.yandex.practicum.interaction.dto.ChangeProductQuantityRequest;
 import ru.yandex.practicum.interaction.dto.ShoppingCartDto;
 import ru.yandex.practicum.interaction.exception.model.BadRequestException;
-import ru.yandex.practicum.interaction.exception.model.EmptyShoppingCartException;
+import ru.yandex.practicum.interaction.exception.model.ConflictException;
 import ru.yandex.practicum.interaction.feign.WarehouseFeignClient;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -31,7 +28,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public ShoppingCartDto getCart(String username) {
         ShoppingCart cart = getShoppingCartByUser(username);
-        log.info("ShoppingCartServiceImpl -> Получена корзина: {}", cart);
+        log.info("Найдена корзина: {}", cart);
 
         return mapper.toDto(cart);
     }
@@ -44,9 +41,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             cart.setProducts(request);
             warehouse.checkProductAvailability(mapper.toDto(cart));
             repository.save(cart);
-            log.info("ShoppingCartServiceImpl -> Товар добавлен в корзину: {}", cart);
+            log.info("Товар добавлен в корзину: {}", cart);
         }
-
         return mapper.toDto(cart);
     }
 
@@ -56,24 +52,24 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ShoppingCart cart = getShoppingCartByUser(username);
         cart.setActive(false);
         repository.save(cart);
-        log.info("ShoppingCartServiceImpl -> Корзина деактивирована для пользователя: {}", username);
+        log.info("Корзина пользователя {} деактивирована", username);
     }
 
     @Override
     public ShoppingCartDto removeProduct(String username, List<UUID> productIds) {
         ShoppingCart cart = getShoppingCartByUser(username);
         if (cart.getActive() == false) {
-            throw new RuntimeException("Корзина деактивирована");
+            throw new ConflictException("Нельзя удалить продукт из неактивной корзины");
         }
 
         if (!cart.getProducts().keySet().containsAll(productIds)) {
-            throw new EmptyShoppingCartException("Empty ShoppingCart for user with name " + username);
+            throw new ConflictException("Нельзя удалить продукт из пустой корзины");
         }
 
         productIds.forEach(productId -> cart.getProducts().remove(productId));
 
         ShoppingCart savedCart = repository.save(cart);
-        log.info("ShoppingCartServiceImpl -> Товары удалены из корзины: {}", savedCart);
+        log.info("Товары удалены из корзины: {}", savedCart);
         return mapper.toDto(savedCart);
     }
 
@@ -81,21 +77,20 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     public ShoppingCartDto changeQuantity(String username, ChangeProductQuantityRequest request) {
         ShoppingCart cart = getShoppingCartByUser(username);
-        cart.getProducts().put(request.getProductId(), request.getNewQuantity());
+        cart.getProducts().put(request.productId(), request.newQuantity());
         ShoppingCart savedCart = repository.save(cart);
-        log.info("ShoppingCartServiceImpl ->  Количества товаров в корзине изменено: {}", savedCart);
+        log.info("Количества товаров в корзине изменено: {}", savedCart);
         return mapper.toDto(savedCart);
     }
 
     private ShoppingCart getShoppingCartByUser(String username) {
         if (username == null || username.isEmpty()) {
-            throw new BadRequestException("Invalid username (it is null or empty)!");
+            throw new BadRequestException("Недопустимое имя пользователя");
         }
         Optional<ShoppingCart> cart = repository.findAllByUsername(username);
         if (cart.isEmpty()) {
             ShoppingCart newCart = ShoppingCart.builder().username(username).active(true).build();
             cart = Optional.of(repository.save(newCart));
-            log.info("Создана новая корзина для покупателя: {}", username);
         }
         return cart.get();
     }

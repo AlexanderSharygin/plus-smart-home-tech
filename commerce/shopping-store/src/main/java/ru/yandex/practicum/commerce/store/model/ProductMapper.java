@@ -11,29 +11,15 @@ public class ProductMapper {
 
     public Product toEntity(final ProductDto productDto) {
         Objects.requireNonNull(productDto);
-        return Product.builder()
-                .productId(productDto.getProductId())
-                .productName(productDto.getProductName())
-                .description(productDto.getDescription())
-                .imageSrc(productDto.getImageSrc())
-                .quantityState(productDto.getQuantityState())
-                .productState(productDto.getProductState())
-                .productCategory(productDto.getProductCategory())
-                .price(productDto.getPrice())
-                .build();
+        return Product.builder().productId(productDto.productId()).productName(productDto.productName())
+                .description(productDto.description()).imageSrc(productDto.imageSrc())
+                .quantityState(productDto.quantityState()).productState(productDto.productState())
+                .productCategory(productDto.productCategory()).price(productDto.price()).build();
     }
 
     public ProductDto toDto(final Product product) {
-        Objects.requireNonNull(product);
-        return ProductDto.builder()
-                .productId(product.getProductId())
-                .productName(product.getProductName())
-                .description(product.getDescription())
-                .imageSrc(product.getImageSrc())
-                .quantityState(product.getQuantityState())
-                .productState(product.getProductState())
-                .productCategory(product.getProductCategory())
-                .price(product.getPrice())
-                .build();
+        return new ProductDto(product.getProductId(), product.getProductName(), product.getDescription(),
+                product.getImageSrc(), product.getQuantityState(), product.getProductState(),
+                product.getProductCategory(), product.getPrice());
     }
 }

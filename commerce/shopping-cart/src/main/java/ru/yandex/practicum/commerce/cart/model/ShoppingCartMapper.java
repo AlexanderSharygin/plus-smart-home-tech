@@ -10,9 +10,6 @@ import ru.yandex.practicum.interaction.dto.ShoppingCartDto;
 public class ShoppingCartMapper {
 
   public ShoppingCartDto toDto(ShoppingCart cart) {
-    return ShoppingCartDto.builder()
-        .shoppingCartId(cart.getCartId())
-        .products(cart.getProducts())
-        .build();
+    return new ShoppingCartDto(cart.getCartId(), cart.getProducts());
   }
 }
