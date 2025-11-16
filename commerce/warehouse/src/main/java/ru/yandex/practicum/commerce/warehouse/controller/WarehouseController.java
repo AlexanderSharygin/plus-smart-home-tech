@@ -19,25 +19,25 @@ public class WarehouseController implements WarehouseFeignClient {
 
     @Override
     public void addNewProduct(NewInWarehouseRequest request) {
-        log.info("WarehouseController: -> Добавление нового товара на склад: {}", request);
+        log.info("Добавление товара на склад: {}", request);
         service.addNewProductToWarehouse(request);
     }
 
     @Override
     public BookedProductsDto checkProductAvailability(ShoppingCartDto cart) {
-        log.info("WarehouseController: -> Проверка количества товаров на складе для корзины: {}", cart);
+        log.info("Проверка количества товаров на складе: {}", cart);
         return service.checkProductAvailability(cart);
     }
 
     @Override
     public void takeToWarehouse(AddToWarehouseRequest request) {
-        log.info("WarehouseController: -> Прием товара на склад: {}", request);
+        log.info("Прием товара на склад: {}", request);
         service.takeProductToWarehouse(request);
     }
 
     @Override
     public AddressDto getWarehouseAddress() {
-        log.info("WarehouseController: -> Получение адреса склада для расчёта доставки");
+        log.info("Получение адреса склада");
         return service.getWarehouseAddress();
     }
 }

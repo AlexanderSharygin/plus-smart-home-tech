@@ -29,12 +29,11 @@ public class WarehouseServiceImpl implements WarehouseService {
     @Override
     @Transactional
     public void addNewProductToWarehouse(NewInWarehouseRequest request) {
-        if (repository.existsById(request.getProductId())) {
-            log.error("Товар уже зарегистрирован на складе - {}", request);
+        if (repository.existsById(request.productId())) {
             throw new ConflictException("Товар уже зарегистрирован на складе " + request);
         }
         repository.save(mapper.toEntity(request));
-        log.info("WarehouseServiceImpl -> Добавлен новый товар на склад");
+        log.info("Добавлен новый товар на склад");
     }
 
     @Override
@@ -43,7 +42,7 @@ public class WarehouseServiceImpl implements WarehouseService {
         double volume = 0;
         boolean fragile = false;
 
-        Map<UUID, Long> cartProducts = cart.getProducts();
+        Map<UUID, Long> cartProducts = cart.products();
         Map<UUID, Product> products = repository.findAllById(cartProducts.keySet())
                 .stream()
                 .collect(Collectors.toMap(Product::getProductId, Function.identity()));
@@ -51,67 +50,40 @@ public class WarehouseServiceImpl implements WarehouseService {
         for (Map.Entry<UUID, Long> cartProduct : cartProducts.entrySet()) {
             Product product = products.get(cartProduct.getKey());
             if (cartProduct.getValue() > product.getQuantity()) {
-                log.info("Товара с id: {}, на складе меньше, чем в корзине!", product.getProductId());
-                throw new ConflictException("Товара с id: " + product.getProductId() +
-                        " на складе меньше, чем в корзине!");
+                throw new ConflictException("Товара с id: " + product.getProductId() + " в наличии, чем в корзине!");
             }
 
-            double productVolume =
-                    product.getDimension().getHeight() *
-                            product.getDimension().getDepth() *
+            double productVolume = product.getDimension().getHeight() * product.getDimension().getDepth() *
                             product.getDimension().getWidth();
-
             volume += productVolume * cartProduct.getValue();
             weight += product.getWeight() * cartProduct.getValue();
-
             if (product.getFragile() == true) {
                 fragile = true;
             }
         }
 
-        BookedProductsDto dto = BookedProductsDto.builder()
-                .deliveryVolume(volume)
-                .deliveryWeight(weight)
-                .fragile(fragile)
-                .build();
-
-        log.info("WarehouseServiceImpl -> Количество товаров на складе для корзины: {} проверено", cart);
-        log.info("WarehouseServiceImpl -> Объем и вес заказа: {}", dto);
-        return dto;
+        return new BookedProductsDto(weight, volume, fragile);
     }
 
     @Override
     @Transactional
     public void takeProductToWarehouse(AddToWarehouseRequest request) {
-        log.info("WarehouseServiceImpl -> Добавление товара в количестве: {}", request.getQuantity());
-
-        Product product = repository.findById(request.getProductId())
-                .orElseThrow(() -> new NotFoundException("Продукт с id " + request.getProductId() + " не найден"));
-
+        Product product = repository.findById(request.productId())
+                .orElseThrow(() -> new NotFoundException("Продукт с id " + request.productId() + " не найден"));
         Long quantity = product.getQuantity();
-
         if (quantity == null) {
             quantity = 0L;
         }
-
-        product.setQuantity(quantity + request.getQuantity());
+        product.setQuantity(quantity + request.quantity());
         repository.save(product);
-
-        log.info("WarehouseServiceImpl -> Новое количество товара: {}", product.getQuantity());
+        log.info("Изменено количество товара: {}", product.getQuantity());
     }
 
     @Override
     public AddressDto getWarehouseAddress() {
-        log.info("WarehouseServiceImpl -> Получение адреса склада для расчёта доставки");
         String address = new Address().getAddress();
-        AddressDto dto = AddressDto.builder()
-                .country(address)
-                .city(address)
-                .street(address)
-                .house(address)
-                .flat(address)
-                .build();
-        log.info("WarehouseServiceImpl -> Актуальный адрес склада: {}", dto);
+        AddressDto dto = new AddressDto(address, address, address, address, address);
+        log.info("Найден адрес склада: {}", dto);
         return dto;
     }
 }

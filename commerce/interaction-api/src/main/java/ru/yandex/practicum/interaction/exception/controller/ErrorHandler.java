@@ -21,18 +21,14 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RestControllerAdvice
 public class ErrorHandler {
 
-
-    @ExceptionHandler({
-            NotFoundException.class
-
-    })
+    @ExceptionHandler({NotFoundException.class})
     @ResponseStatus(NOT_FOUND)
     public ErrorResponse handlerNotFoundException(final NotFoundException e) {
-        log.error("Ошибка: 404 NOT_FOUND - {}", Arrays.stream(e.getStackTrace()).toList());
+        log.error("Entity is not found - {}", Arrays.stream(e.getStackTrace()).toList());
         return ErrorResponse.builder()
                 .httpStatus(NOT_FOUND)
                 .userMessage(e.getMessage())
-                .message("Ошибка: 404 NOT_FOUND")
+                .message("Entity is not found")
                 .localizedMessage(e.getLocalizedMessage())
                 .build();
     }
@@ -45,7 +41,7 @@ public class ErrorHandler {
         return ErrorResponse.builder()
                 .httpStatus(BAD_REQUEST)
                 .userMessage(e.getMessage())
-                .message("Validation error: 400 NOT_FOUND")
+                .message("Validation error")
                 .localizedMessage(e.getLocalizedMessage())
                 .build();
     }
@@ -66,7 +62,7 @@ public class ErrorHandler {
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIncorrectParameterException(final BadRequestException e) {
-        log.warn(e.getMessage());
+        log.error("Bad request exception - {}", Arrays.stream(e.getStackTrace()).toList());
 
         return ErrorResponse.builder()
                 .httpStatus(HttpStatus.BAD_REQUEST)
@@ -90,7 +86,7 @@ public class ErrorHandler {
         if (title.isPresent()) {
             message = message + " - " + title.get();
         }
-        log.warn(message);
+        log.error("MethodArgumentNotValidException exception - {}", Arrays.stream(e.getStackTrace()).toList());
 
 
         return ErrorResponse.builder()
@@ -101,23 +97,10 @@ public class ErrorHandler {
                 .build();
     }
 
-    @ExceptionHandler(EmptyShoppingCartException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse entityIsAlreadyExist(EmptyShoppingCartException exception) {
-        log.warn(exception.getMessage());
-
-        return ErrorResponse.builder()
-                .httpStatus(HttpStatus.CONFLICT)
-                .userMessage(exception.getMessage())
-                .message("Empty shopping cart")
-                .localizedMessage(exception.getLocalizedMessage())
-                .build();
-    }
-
     @ExceptionHandler(ServiceUnavailableException.class)
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public ErrorResponse serviceUnavailable(ServiceUnavailableException exception) {
-        log.warn(exception.getMessage());
+        log.error("ServiceUnavailableException exception - {}", Arrays.stream(exception.getStackTrace()).toList());
 
         return ErrorResponse.builder()
                 .httpStatus(HttpStatus.SERVICE_UNAVAILABLE)
@@ -130,12 +113,12 @@ public class ErrorHandler {
     @ExceptionHandler(ConflictException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse entityIsAlreadyExist(ConflictException exception) {
-        log.warn(exception.getMessage());
+        log.error("ConflictException exception - {}", Arrays.stream(exception.getStackTrace()).toList());
 
         return ErrorResponse.builder()
                 .httpStatus(HttpStatus.CONFLICT)
                 .userMessage(exception.getMessage())
-                .message("Entity state is not valid")
+                .message("Conflict exception")
                 .localizedMessage(exception.getLocalizedMessage())
                 .build();
     }

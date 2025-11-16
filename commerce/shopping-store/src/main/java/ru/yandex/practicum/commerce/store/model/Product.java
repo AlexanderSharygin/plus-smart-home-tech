@@ -49,5 +49,4 @@ public class Product {
   @Min(1)
   @Column(nullable = false, precision = 19, scale = 2)
   private BigDecimal price;
-
 }

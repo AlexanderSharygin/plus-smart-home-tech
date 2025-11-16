@@ -16,7 +16,7 @@ import java.util.UUID;
 public interface ShoppingStoreFeignClient {
 
     @PutMapping
-    ProductDto createNewProduct(@RequestBody @Valid ProductDto productDto);
+    ProductDto createProduct(@RequestBody @Valid ProductDto productDto);
 
     @PostMapping
     ProductDto updateProduct(@RequestBody @Valid ProductDto productDto);
@@ -29,7 +29,7 @@ public interface ShoppingStoreFeignClient {
                                  @SpringQueryMap Pageable pageable);
 
     @PostMapping("/removeProductFromStore")
-    boolean removeProductFromStore(@RequestBody UUID productId);
+    boolean removeProduct(@RequestBody UUID productId);
 
     @PostMapping("/quantityState")
     boolean setProductQuantityState(@ModelAttribute SetProductQuantityStateRequest request);

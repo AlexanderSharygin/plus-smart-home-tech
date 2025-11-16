@@ -12,9 +12,10 @@ import java.util.UUID;
 @Table(name  = "cart", schema = "cart")
 @Getter
 @Setter
-@Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ShoppingCart {
 
   @Id
@@ -32,5 +33,4 @@ public class ShoppingCart {
   @MapKeyColumn(name = "product_id")
   @Column(name = "quantity")
   private Map<UUID, Long> products = new HashMap<>();
-
 }

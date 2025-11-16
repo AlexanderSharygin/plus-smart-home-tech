@@ -15,9 +15,6 @@ import ru.yandex.practicum.commerce.store.service.ShoppingStoreService;
 
 import java.util.UUID;
 
-/**
- * REST controller for managing products in the shopping store.
- */
 @RestController
 @RequestMapping("/api/v1/shopping-store")
 @RequiredArgsConstructor
@@ -28,38 +25,38 @@ public class ShoppingStoreController implements ShoppingStoreFeignClient {
     private final ShoppingStoreService service;
 
     @Override
-    public ProductDto createNewProduct(ProductDto productDto) {
-        log.info("ShoppingStoreController: -> Создание нового товара в ассортименте: {}", productDto);
-        return service.createNewProduct(productDto);
+    public ProductDto createProduct(ProductDto productDto) {
+        log.info("Создание нового товара: {}", productDto);
+        return service.createProduct(productDto);
     }
 
     @Override
     public ProductDto updateProduct(ProductDto productDto) {
-        log.info("ShoppingStoreController: -> Обновление товара в ассортименте: {}", productDto);
+        log.info("Обновление товара: {}", productDto);
         return service.updateProduct(productDto);
     }
 
     @Override
     public ProductDto getProduct(UUID productId) {
-        log.info("ShoppingStoreController: -> Получение сведения по товару из БД по id: {}", productId);
+        log.info("Получение сведения по товару по id: {}", productId);
         return service.getProductById(productId);
     }
 
     @Override
     public Page<ProductDto> getProducts(ProductCategory category, Pageable pageable) {
-        log.info("ShoppingStoreController: -> Получение списка товаров по типу: {}", category);
-        return service.getProducts(category, pageable);
+        log.info("Получение списка товаров с типом: {}", category);
+        return service.getProductsByCategory(category, pageable);
     }
 
     @Override
-    public boolean removeProductFromStore(UUID productId) {
-        log.info("ShoppingStoreController: -> Удаление товара с id: {}", productId);
+    public boolean removeProduct(UUID productId) {
+        log.info("Удаление товара с id: {}", productId);
         return service.deleteProduct(productId);
     }
 
     @Override
     public boolean setProductQuantityState(SetProductQuantityStateRequest request) {
-        log.info("ShoppingStoreController: -> Установка статуса по товару: {}", request);
+        log.info("Установка статуса по товару: {}", request);
         return service.setQuantityState(request);
     }
 }

@@ -7,5 +7,4 @@ import ru.yandex.practicum.commerce.warehouse.entity.Product;
 import java.util.UUID;
 
 public interface ProductRepository extends JpaRepository<Product, UUID> {
-
 }

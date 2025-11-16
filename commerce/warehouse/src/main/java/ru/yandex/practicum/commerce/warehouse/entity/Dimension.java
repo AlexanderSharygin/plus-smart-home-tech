@@ -5,7 +5,9 @@ import jakarta.validation.constraints.Positive;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Data
+@Getter
+@Setter
+@ToString
 @Embeddable
 @NoArgsConstructor
 @AllArgsConstructor

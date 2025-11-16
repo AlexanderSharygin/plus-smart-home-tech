@@ -1,3 +1,6 @@
+server:
+  port: 0
+
 spring:
   application:
     name: shopping-store
@@ -20,8 +23,5 @@ spring:
   sql:
     init:
       mode: always
-
-server:
-  port: 0
 
 

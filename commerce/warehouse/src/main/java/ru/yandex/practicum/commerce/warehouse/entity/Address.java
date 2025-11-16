@@ -6,7 +6,9 @@ import lombok.experimental.FieldDefaults;
 import java.security.SecureRandom;
 import java.util.Random;
 
-@Data
+@Getter
+@Setter
+@ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

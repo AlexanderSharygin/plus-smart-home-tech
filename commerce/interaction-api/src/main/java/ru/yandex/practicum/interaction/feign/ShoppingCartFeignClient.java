@@ -17,15 +17,13 @@ public interface ShoppingCartFeignClient {
     ShoppingCartDto getCart(@RequestParam("username") String username);
 
     @PutMapping
-    ShoppingCartDto addProduct(@RequestParam("username") String username,
-                               @RequestBody Map<UUID, Long> request);
+    ShoppingCartDto addProduct(@RequestParam("username") String username, @RequestBody Map<UUID, Long> request);
 
     @DeleteMapping
     void deactivateUserCart(@RequestParam("username") String username);
 
     @PostMapping("/remove")
-    ShoppingCartDto removeProduct(@RequestParam("username") String username,
-                                  @RequestBody List<UUID> productIds);
+    ShoppingCartDto removeProduct(@RequestParam("username") String username, @RequestBody List<UUID> productIds);
 
     @PostMapping("/change-quantity")
     ShoppingCartDto changeQuantity(@RequestParam("username") String username,
