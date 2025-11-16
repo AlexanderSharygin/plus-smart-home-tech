@@ -1,3 +1,7 @@
+spring:
+  application:
+    name: collector
+
 collector:
   kafka:
     uri: localhost:9092
