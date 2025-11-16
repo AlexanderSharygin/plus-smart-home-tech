@@ -15,7 +15,6 @@ import java.util.UUID;
 @Table(name = "products", schema = "store")
 @Getter
 @Setter
-@EqualsAndHashCode(of = "productId")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

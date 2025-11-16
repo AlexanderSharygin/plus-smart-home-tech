@@ -1,7 +1,6 @@
 package ru.yandex.practicum.interaction.exception.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -9,8 +8,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.yandex.practicum.interaction.exception.model.ErrorResponse;
-import ru.yandex.practicum.interaction.exception.model.ProductNotFoundException;
+import ru.yandex.practicum.interaction.exception.model.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,11 +23,11 @@ public class ErrorHandler {
 
 
     @ExceptionHandler({
-            ProductNotFoundException.class
+            NotFoundException.class
 
     })
     @ResponseStatus(NOT_FOUND)
-    public ErrorResponse handlerNotFoundException(final ProductNotFoundException e) {
+    public ErrorResponse handlerNotFoundException(final NotFoundException e) {
         log.error("Ошибка: 404 NOT_FOUND - {}", Arrays.stream(e.getStackTrace()).toList());
         return ErrorResponse.builder()
                 .httpStatus(NOT_FOUND)
@@ -100,6 +98,45 @@ public class ErrorHandler {
                 .userMessage(message)
                 .message("Validation error")
                 .localizedMessage(e.getLocalizedMessage())
+                .build();
+    }
+
+    @ExceptionHandler(EmptyShoppingCartException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse entityIsAlreadyExist(EmptyShoppingCartException exception) {
+        log.warn(exception.getMessage());
+
+        return ErrorResponse.builder()
+                .httpStatus(HttpStatus.CONFLICT)
+                .userMessage(exception.getMessage())
+                .message("Empty shopping cart")
+                .localizedMessage(exception.getLocalizedMessage())
+                .build();
+    }
+
+    @ExceptionHandler(ServiceUnavailableException.class)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    public ErrorResponse serviceUnavailable(ServiceUnavailableException exception) {
+        log.warn(exception.getMessage());
+
+        return ErrorResponse.builder()
+                .httpStatus(HttpStatus.SERVICE_UNAVAILABLE)
+                .userMessage(exception.getMessage())
+                .message("Service unavailable")
+                .localizedMessage(exception.getLocalizedMessage())
+                .build();
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse entityIsAlreadyExist(ConflictException exception) {
+        log.warn(exception.getMessage());
+
+        return ErrorResponse.builder()
+                .httpStatus(HttpStatus.CONFLICT)
+                .userMessage(exception.getMessage())
+                .message("Entity state is not valid")
+                .localizedMessage(exception.getLocalizedMessage())
                 .build();
     }
 }

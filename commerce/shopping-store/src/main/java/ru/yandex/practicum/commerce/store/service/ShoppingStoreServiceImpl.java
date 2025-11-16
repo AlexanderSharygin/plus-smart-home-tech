@@ -12,7 +12,7 @@ import ru.yandex.practicum.interaction.dto.ProductDto;
 import ru.yandex.practicum.interaction.dto.SetProductQuantityStateRequest;
 import ru.yandex.practicum.interaction.enums.ProductCategory;
 import ru.yandex.practicum.interaction.enums.ProductState;
-import ru.yandex.practicum.interaction.exception.model.ProductNotFoundException;
+import ru.yandex.practicum.interaction.exception.model.NotFoundException;
 import ru.yandex.practicum.commerce.store.model.Product;
 import ru.yandex.practicum.commerce.store.model.ProductMapper;
 import ru.yandex.practicum.commerce.store.repository.ProductRepository;
@@ -93,8 +93,7 @@ public class ShoppingStoreServiceImpl implements ShoppingStoreService {
 
     private Product findProductById(UUID productId) {
         return repository.findById(productId).orElseThrow(
-                () -> new ProductNotFoundException(productId)
-        );
+                () -> new NotFoundException("Продукт с id "+ productId + "не найден"));
     }
 
     private void updateProductContent(final Product target, final ProductDto source) {
