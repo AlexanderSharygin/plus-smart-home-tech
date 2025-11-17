@@ -56,7 +56,12 @@ public class ShoppingStoreServiceImpl implements ShoppingStoreService {
 
     @Override
     public Page<ProductDto> getProductsByCategory(ProductCategory productCategory, Pageable pageable) {
-        Sort sort = Sort.by(Sort.DEFAULT_DIRECTION, String.join(",", pageable.sort()));
+        Sort sort;
+        if (pageable.sort().size() > 1 && pageable.sort().get(1).equals("DESC")) {
+            sort = Sort.by(Sort.Direction.DESC, String.join(",", pageable.sort().getFirst()));
+        } else {
+            sort = Sort.by(Sort.Direction.ASC, String.join(",", pageable.sort().getFirst()));
+        }
         PageRequest pageRequest = PageRequest.of(pageable.page(), pageable.size(), sort);
         Page<ProductDto> products = repository.findAllByProductCategory(productCategory, pageRequest)
                 .map(mapper::toDto);

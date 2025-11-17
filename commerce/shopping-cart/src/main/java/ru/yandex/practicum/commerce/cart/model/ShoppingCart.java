@@ -19,6 +19,7 @@ import java.util.UUID;
 public class ShoppingCart {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "cart_id", nullable = false)
   private UUID cartId;
 
