@@ -1,0 +1,27 @@
+server:
+  port: 0
+
+spring:
+  application:
+    name: shopping-store
+
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: "jdbc:postgresql://localhost:5432/commerce?currentSchema=store"
+    username: admin
+    password: admin
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+        format_sql: true
+
+  sql:
+    init:
+      mode: always
+
+

@@ -1,0 +1,126 @@
+package ru.yandex.practicum.interaction.exception.controller;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.yandex.practicum.interaction.exception.model.*;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+
+@Slf4j
+@RestControllerAdvice
+public class ErrorHandler {
+
+    @ExceptionHandler({NotFoundException.class})
+    @ResponseStatus(NOT_FOUND)
+    public ErrorResponse handlerNotFoundException(final NotFoundException e) {
+        log.error("Entity is not found - {}", Arrays.stream(e.getStackTrace()).toList());
+        return ErrorResponse.builder()
+                .httpStatus(NOT_FOUND)
+                .userMessage(e.getMessage())
+                .message("Entity is not found")
+                .localizedMessage(e.getLocalizedMessage())
+                .build();
+    }
+
+    @ExceptionHandler({MissingServletRequestParameterException.class})
+    @ResponseStatus(BAD_REQUEST)
+    public ErrorResponse handleMissingServletRequestParameterException(final Throwable e) {
+        log.warn("MissingServletRequestParameterException. Message: {}, StackTrace: {}", e.getMessage(), e.getStackTrace());
+
+        return ErrorResponse.builder()
+                .httpStatus(BAD_REQUEST)
+                .userMessage(e.getMessage())
+                .message("Validation error")
+                .localizedMessage(e.getLocalizedMessage())
+                .build();
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleOtherExceptions(final Throwable e) {
+        log.warn("Unknown error. Message: {}, StackTrace: {}", e.getMessage(), e.getStackTrace());
+
+        return ErrorResponse.builder()
+                .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                .userMessage(e.getMessage())
+                .message("Unknown error")
+                .localizedMessage(e.getLocalizedMessage())
+                .build();
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleIncorrectParameterException(final BadRequestException e) {
+        log.error("Bad request exception - {}", Arrays.stream(e.getStackTrace()).toList());
+
+        return ErrorResponse.builder()
+                .httpStatus(HttpStatus.BAD_REQUEST)
+                .userMessage(e.getMessage())
+                .message("Bad request")
+                .localizedMessage(e.getLocalizedMessage())
+                .build();
+    }
+
+    @ExceptionHandler({MethodArgumentNotValidException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse commonValidation(MethodArgumentNotValidException e) {
+        List<FieldError> items = e.getBindingResult().getFieldErrors();
+        String message = items.stream()
+                .map(FieldError::getField)
+                .findFirst()
+                .orElse("Unknown error");
+        Optional<String> title = items.stream()
+                .map(FieldError::getDefaultMessage)
+                .findFirst();
+        if (title.isPresent()) {
+            message = message + " - " + title.get();
+        }
+        log.error("MethodArgumentNotValidException exception - {}", Arrays.stream(e.getStackTrace()).toList());
+
+
+        return ErrorResponse.builder()
+                .httpStatus(HttpStatus.BAD_REQUEST)
+                .userMessage(message)
+                .message("Validation error")
+                .localizedMessage(e.getLocalizedMessage())
+                .build();
+    }
+
+    @ExceptionHandler(ServiceUnavailableException.class)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    public ErrorResponse serviceUnavailable(ServiceUnavailableException exception) {
+        log.error("ServiceUnavailableException exception - {}", Arrays.stream(exception.getStackTrace()).toList());
+
+        return ErrorResponse.builder()
+                .httpStatus(HttpStatus.SERVICE_UNAVAILABLE)
+                .userMessage(exception.getMessage())
+                .message("Service unavailable")
+                .localizedMessage(exception.getLocalizedMessage())
+                .build();
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse entityIsAlreadyExist(ConflictException exception) {
+        log.error("ConflictException exception - {}", Arrays.stream(exception.getStackTrace()).toList());
+
+        return ErrorResponse.builder()
+                .httpStatus(HttpStatus.CONFLICT)
+                .userMessage(exception.getMessage())
+                .message("Conflict exception")
+                .localizedMessage(exception.getLocalizedMessage())
+                .build();
+    }
+}
+
