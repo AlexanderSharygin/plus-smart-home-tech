@@ -1,5 +1,11 @@
 package ru.yandex.practicum.commerce.order.service;
 
+import org.springframework.data.domain.Page;
+import ru.yandex.practicum.interaction.dto.CreateNewOrderRequest;
+import ru.yandex.practicum.interaction.dto.OrderDto;
+import ru.yandex.practicum.interaction.dto.Pageable;
+import ru.yandex.practicum.interaction.dto.ProductReturnRequest;
+
 import java.util.UUID;
 
 public interface OrderService {

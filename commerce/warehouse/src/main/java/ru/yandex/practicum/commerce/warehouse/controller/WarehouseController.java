@@ -30,7 +30,7 @@ public class WarehouseController implements WarehouseFeignClient {
     }
 
     @Override
-    public void takeToWarehouse(AddToWarehouseRequest request) {
+    public void addToWarehouse(AddToWarehouseRequest request) {
         log.info("Прием товара на склад: {}", request);
         service.takeProductToWarehouse(request);
     }

@@ -1,4 +1,4 @@
-package ru.yandex.practicum.commerce.order;
+package ru.yandex.practicum.commerce.payment;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,9 +8,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication
 @ConfigurationPropertiesScan
 @EnableFeignClients(basePackages = "ru.yandex.practicum.interaction.feign")
-public class OrderService {
-    public static void main(String[] args) {
-        SpringApplication.run(OrderService.class, args);
-    }
-
+public class PaymentService {
+	public static void main(String[] args) {
+		SpringApplication.run(PaymentService.class, args);
+	}
 }
