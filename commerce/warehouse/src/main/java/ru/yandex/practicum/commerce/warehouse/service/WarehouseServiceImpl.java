@@ -1,12 +1,16 @@
 package ru.yandex.practicum.commerce.warehouse.service;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.commerce.warehouse.entity.Address;
+import ru.yandex.practicum.commerce.warehouse.entity.OrderBooking;
 import ru.yandex.practicum.commerce.warehouse.entity.Product;
 import ru.yandex.practicum.commerce.warehouse.entity.ProductMapper;
+import ru.yandex.practicum.commerce.warehouse.repository.BookingRepository;
 import ru.yandex.practicum.commerce.warehouse.repository.ProductRepository;
 import ru.yandex.practicum.interaction.dto.*;
 import ru.yandex.practicum.interaction.exception.model.ConflictException;
@@ -24,6 +28,7 @@ import java.util.stream.Collectors;
 public class WarehouseServiceImpl implements WarehouseService {
 
     private final ProductRepository repository;
+    private final BookingRepository bookingRepository;
     private final ProductMapper mapper;
 
     @Override
@@ -85,5 +90,69 @@ public class WarehouseServiceImpl implements WarehouseService {
         AddressDto dto = new AddressDto(address, address, address, address, address);
         log.info("Найден адрес склада: {}", dto);
         return dto;
+    }
+
+    @Override
+    @Transactional
+    public BookedProductsDto assemblyProductsForOrder(@RequestBody @Valid AssemblyProductsForOrderRequest request) {
+        log.info("WarehouseServiceImpl: -> Собираем товары к заказу для подготовки к отправке: {}", request);
+
+        double weight = 0;
+        double volume = 0;
+        boolean fragile = false;
+
+        UUID orderId = request.getOrderId();
+
+        Map<UUID, Long> productsForBooking = request.getProducts();
+        Map<UUID, Product> products = repository.findAllById(productsForBooking.keySet())
+                .stream()
+                .collect(Collectors.toMap(Product::getProductId, Function.identity()));
+
+        for (Map.Entry<UUID, Long> cartProduct : productsForBooking.entrySet()) {
+            Product product = products.get(cartProduct.getKey());
+            if (cartProduct.getValue() > product.getQuantity()) {
+                log.info("Товара с id: {}, на складе меньше, чем в заказе!", product.getProductId());
+                throw new ConflictException("Товара на складе меньше, чем в заказе!"+ product.getProductId());
+            }
+            product.setQuantity(product.getQuantity() - cartProduct.getValue());
+
+            var productVolume =
+                    product.getDimension().getHeight() *
+                            product.getDimension().getDepth() *
+                            product.getDimension().getWidth();
+
+            volume += productVolume * cartProduct.getValue();
+            weight += product.getWeight() * cartProduct.getValue();
+
+            if (product.getFragile() == true) {
+                fragile = true;
+            }
+        }
+
+        repository.saveAll(products.values());
+
+        BookedProductsDto dto = new BookedProductsDto(weight, volume, fragile);
+
+        OrderBooking booking = OrderBooking.builder().build();
+        booking.setOrderId(orderId);
+        booking.setProducts(productsForBooking);
+
+        bookingRepository.save(booking);
+
+        log.info("WarehouseServiceImpl: -> Товары собраны и готовы к отправке!");
+        return dto;
+    }
+
+    @Override
+    public void acceptReturn(@RequestBody Map<UUID, Integer> products) {
+        log.info("WarehouseServiceImpl: -> Возврат товаров на склад: {}", products);
+
+        products.forEach((key, value) -> {
+            AddToWarehouseRequest request = new AddToWarehouseRequest(key, value);
+
+            takeProductToWarehouse(request);
+        });
+
+        log.info("WarehouseServiceImpl: -> Товары приняты на склад!");
     }
 }

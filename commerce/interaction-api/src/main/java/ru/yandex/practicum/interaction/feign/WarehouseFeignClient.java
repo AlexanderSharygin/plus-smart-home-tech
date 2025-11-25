@@ -32,7 +32,7 @@ public interface WarehouseFeignClient {
     void shippedToDelivery(ShippedToDeliveryRequest request);
 
     @PostMapping("/return")
-    void acceptReturn(@RequestBody Map<UUID, Long> products);
+    void acceptReturn(@RequestBody Map<UUID, Integer> products);
 
     @PostMapping("/assembly")
     BookedProductsDto assemblyProductsForOrder(@RequestBody @Valid AssemblyProductsForOrderRequest request);

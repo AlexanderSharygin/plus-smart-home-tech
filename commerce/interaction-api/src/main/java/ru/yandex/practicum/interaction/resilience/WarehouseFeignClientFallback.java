@@ -38,7 +38,7 @@ public class WarehouseFeignClientFallback implements WarehouseFeignClient {
     }
 
     @Override
-    public void acceptReturn(Map<UUID, Long> products) {
+    public void acceptReturn(Map<UUID, Integer> products) {
         throw new ServiceUnavailableException("Warehouse временно недоступен");
     }
 
