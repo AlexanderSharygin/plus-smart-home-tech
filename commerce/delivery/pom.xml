@@ -91,7 +91,7 @@
                             <goal>repackage</goal>
                         </goals>
                         <configuration>
-                            <mainClass>ru.yandex.practicum.commerce.payment.PaymentService</mainClass>
+                            <mainClass>ru.yandex.practicum.commerce.delivery.DeliveryService</mainClass>
                         </configuration>
                     </execution>
                 </executions>
