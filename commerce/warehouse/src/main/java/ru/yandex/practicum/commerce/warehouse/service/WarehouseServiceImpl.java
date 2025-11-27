@@ -124,7 +124,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
-    public void acceptReturn(@RequestBody Map<UUID, Integer> products) {
+    public void acceptReturn(Map<UUID, Integer> products) {
         products.forEach((key, value) -> {
             AddToWarehouseRequest request = new AddToWarehouseRequest(key, value);
             addToWarehouse(request);
