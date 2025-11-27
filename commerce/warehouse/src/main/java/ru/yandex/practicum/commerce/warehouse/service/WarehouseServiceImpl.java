@@ -1,11 +1,9 @@
 package ru.yandex.practicum.commerce.warehouse.service;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 import ru.yandex.practicum.commerce.warehouse.entity.*;
 import ru.yandex.practicum.commerce.warehouse.repository.BookingRepository;
 import ru.yandex.practicum.commerce.warehouse.repository.ProductRepository;
@@ -118,7 +116,7 @@ public class WarehouseServiceImpl implements WarehouseService {
         booking.setOrderId(orderId);
         booking.setProducts(productsForBooking);
         bookingRepository.save(booking);
-        log.info("Заказ успещно собран");
+        log.info("Заказ успешно собран");
 
         return dto;
     }

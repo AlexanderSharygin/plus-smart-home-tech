@@ -3,10 +3,8 @@ package ru.yandex.practicum.commerce.warehouse.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.proxy.HibernateProxy;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 @Entity
