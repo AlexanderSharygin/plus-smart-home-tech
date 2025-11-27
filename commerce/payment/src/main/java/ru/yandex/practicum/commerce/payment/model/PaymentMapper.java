@@ -8,7 +8,6 @@ import ru.yandex.practicum.interaction.dto.PaymentDto;
 @Slf4j
 public class PaymentMapper {
 
-
     public PaymentDto toDto(final Payment payment) {
         return new PaymentDto(payment.getPaymentId(), payment.getTotalPayment(), payment.getDeliveryTotal(),
                 payment.getFeeTotal());

@@ -16,7 +16,6 @@ import ru.yandex.practicum.interaction.exception.model.NotFoundException;
 import ru.yandex.practicum.interaction.feign.OrderFeignClient;
 import ru.yandex.practicum.interaction.feign.WarehouseFeignClient;
 
-
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -54,12 +53,11 @@ public class DeliveryServiceImpl implements DeliveryService {
 
     @Override
     @Transactional
-    public DeliveryDto planDelivery(DeliveryDto dto) {
+    public DeliveryDto createDelivery(DeliveryDto dto) {
         Delivery delivery = mapper.toEntity(dto);
         delivery.setDeliveryState(DeliveryState.CREATED);
         DeliveryDto savedDelivery = mapper.toDto(repository.save(delivery));
-        log.info("DeliveryService -> Указанная заявка с присвоенным идентификатором: {}",
-                savedDelivery.deliveryId());
+        log.info("Создана заявка с id: {}", savedDelivery.deliveryId());
         return savedDelivery;
     }
 
@@ -70,7 +68,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         delivery.setDeliveryState(DeliveryState.DELIVERED);
         orderClient.delivery(delivery.getOrderId());
         Delivery updatedDelivery = repository.save(delivery);
-        log.info("DeliveryService -> Успешная доставка заказа с id: {}", updatedDelivery.getDeliveryId());
+        log.info("Успешная доставка заказа с id: {}", updatedDelivery.getDeliveryId());
     }
 
     @Override
@@ -80,8 +78,8 @@ public class DeliveryServiceImpl implements DeliveryService {
         delivery.setDeliveryState(DeliveryState.IN_PROGRESS);
         ShippedToDeliveryRequest request = new ShippedToDeliveryRequest(delivery.getOrderId(), deliveryId);
         warehouseClient.shippedToDelivery(request);
-        Delivery updatedDelivery = repository.save(delivery);
-        log.info("DeliveryService -> Товар получен в доставку с id: {}", updatedDelivery.getDeliveryId());
+        repository.save(delivery);
+        log.info("Заказ передан в доставку");
     }
 
     @Override
@@ -90,13 +88,13 @@ public class DeliveryServiceImpl implements DeliveryService {
         Delivery delivery = getDeliveryById(deliveryId);
         delivery.setDeliveryState(DeliveryState.FAILED);
         orderClient.deliveryFailed(delivery.getOrderId());
-        Delivery updatedDelivery = repository.save(delivery);
-        log.info("DeliveryService -> Товар не получен в доставку с id: {}", updatedDelivery.getDeliveryId());
+        repository.save(delivery);
+        log.info("Доставку завершилась неудачей");
     }
 
     @Override
     @Transactional
-    public BigDecimal deliveryCost(OrderDto order) {
+    public BigDecimal getDeliveryCost(OrderDto order) {
         Delivery delivery = getDeliveryById(order.deliveryId());
         String fromAddressStreet = delivery.getFromAddress().getStreet();
         BigDecimal totalCost = getTotalCost(delivery, fromAddressStreet);
@@ -104,7 +102,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         delivery.setDeliveryVolume(BigDecimal.valueOf(order.deliveryVolume()));
         delivery.setFragile(order.fragile());
         repository.save(delivery);
-        log.info("DeliveryService -> Полная стоимость доставки заказа: {}", totalCost);
+        log.info("Стоимость доставки заказа: {}", totalCost);
         return totalCost;
     }
 

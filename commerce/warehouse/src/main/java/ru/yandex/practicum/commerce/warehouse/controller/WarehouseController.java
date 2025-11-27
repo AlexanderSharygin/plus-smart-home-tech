@@ -33,19 +33,19 @@ public class WarehouseController implements WarehouseFeignClient {
     }
 
     @Override
-    public void addNewProduct(@RequestBody @Valid NewInWarehouseRequest request) {
+    public void addNewProduct(NewInWarehouseRequest request) {
         log.info("Добавление товара на склад: {}", request);
         service.addNewProduct(request);
     }
 
     @Override
-    public void addToWarehouse(@RequestBody @Valid AddToWarehouseRequest request) {
+    public void addToWarehouse(AddToWarehouseRequest request) {
         log.info("Прием товара на склад: {}", request);
         service.addToWarehouse(request);
     }
 
     @Override
-    public BookedProductsDto checkProductAvailability(@RequestBody @Valid ShoppingCartDto cart) {
+    public BookedProductsDto checkProductAvailability(ShoppingCartDto cart) {
         log.info("Проверка количества товаров на складе: {}", cart);
         return service.checkProductAvailability(cart);
     }
@@ -57,13 +57,13 @@ public class WarehouseController implements WarehouseFeignClient {
     }
 
     @Override
-    public BookedProductsDto assemblyForOrder(@RequestBody @Valid AssemblyProductsForOrderRequest request) {
+    public BookedProductsDto assemblyForOrder(AssemblyProductsForOrderRequest request) {
         log.info("Начинаем сборку заказа: {}", request);
         return service.assemblyForOrder(request);
     }
 
     @Override
-    public void shippedToDelivery(@RequestBody @Valid ShippedToDeliveryRequest request) {
+    public void shippedToDelivery(ShippedToDeliveryRequest request) {
         log.info("Передаем товары в доставку: {}", request);
         UUID orderId = request.orderId();
         OrderBooking booking = bookingRepository.findBookingByOrderId(orderId)

@@ -9,7 +9,6 @@ import ru.yandex.practicum.interaction.dto.OrderDto;
 import ru.yandex.practicum.interaction.dto.PaymentDto;
 import ru.yandex.practicum.interaction.feign.PaymentFeignClient;
 
-
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -23,32 +22,29 @@ public class PaymentController implements PaymentFeignClient {
 
     @Override
     public PaymentDto payment(OrderDto order) {
-        log.info("PaymentController: -> Формирование оплаты для заказа: {}", order);
-        PaymentDto dto = service.payment(order);
-        return dto;
+        log.info("Начало оплаты для заказа с id: {}", order.orderId());
+        return service.getPayment(order);
     }
 
     @Override
     public BigDecimal getTotalCost(OrderDto order) {
-        log.info("PaymentController: -> Расчёт полной стоимости заказа: {}", order);
+        log.info("Начало расчёта полной стоимости заказа c id: {}", order.orderId());
         return service.getTotalCost(order);
     }
 
     @Override
     public void paymentSuccess(UUID paymentId) {
-        log.info("PaymentController: -> Метод для эмуляции успешной оплаты: {}", paymentId);
         service.paymentSuccess(paymentId);
     }
 
     @Override
     public BigDecimal productCost(OrderDto order) {
-        log.info("PaymentController: -> Расчёт стоимости товаров в заказе: {}", order);
-        return service.productCost(order);
+        log.info("Начало расчёта стоимости товаров в заказе с id: {}", order.orderId());
+        return service.getProductCost(order);
     }
 
     @Override
     public void paymentFailed(UUID paymentId) {
-        log.info("PaymentController: -> Метод для эмуляции отказа в оплате платежного шлюза: {}", paymentId);
         service.paymentFailed(paymentId);
     }
 }

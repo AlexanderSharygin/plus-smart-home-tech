@@ -9,7 +9,6 @@ import ru.yandex.practicum.interaction.dto.DeliveryDto;
 import ru.yandex.practicum.interaction.dto.OrderDto;
 import ru.yandex.practicum.interaction.feign.DeliveryFeignClient;
 
-
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -22,9 +21,9 @@ public class DeliveryController implements DeliveryFeignClient {
     private final DeliveryService service;
 
     @Override
-    public DeliveryDto planDelivery(DeliveryDto delivery) {
+    public DeliveryDto createDelivery(DeliveryDto delivery) {
         log.info("DeliveryController -> Создание новой доставки: {}", delivery);
-        return service.planDelivery(delivery);
+        return service.createDelivery(delivery);
     }
 
     @Override
@@ -46,8 +45,8 @@ public class DeliveryController implements DeliveryFeignClient {
     }
 
     @Override
-    public BigDecimal deliveryCost(OrderDto order) {
+    public BigDecimal getDeliveryCost(OrderDto order) {
         log.info("DeliveryController -> Расчёт полной стоимости доставки заказа: {}", order);
-        return service.deliveryCost(order);
+        return service.getDeliveryCost(order);
     }
 }

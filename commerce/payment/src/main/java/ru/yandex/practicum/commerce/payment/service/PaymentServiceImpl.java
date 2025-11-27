@@ -17,7 +17,6 @@ import ru.yandex.practicum.interaction.exception.model.NotFoundException;
 import ru.yandex.practicum.interaction.feign.OrderFeignClient;
 import ru.yandex.practicum.interaction.feign.ShoppingStoreFeignClient;
 
-
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.UUID;
@@ -36,18 +35,9 @@ public class PaymentServiceImpl implements PaymentService {
     @Value("${payment.vat}")
     private BigDecimal vat;
 
-    private void checkProductPrice(OrderDto order)    {
-        if (order.totalPrice() == null || order.deliveryPrice() == null) {
-            log.error("В заказе отсутствует необходимая информация!");
-            throw new ConflictException("В заказе отсутствует необходимая информация!");
-        }
-    }
-
     @Override
     @Transactional
-    public PaymentDto payment(OrderDto order) { log.info("PaymentService: -> Формирование оплаты для заказа: {}", order);
-        checkProductPrice(order);
-
+    public PaymentDto getPayment(OrderDto order) {
         Payment payment = Payment.builder()
                 .productsTotal(order.productPrice())
                 .deliveryTotal(order.deliveryPrice())
@@ -56,76 +46,59 @@ public class PaymentServiceImpl implements PaymentService {
                 .paymentState(PaymentState.PENDING)
                 .orderId(order.orderId())
                 .build();
-
         PaymentDto savedPayment = mapper.toDto(repository.save(payment));
+        log.info("Создана оплата заказа с id: {}", order.orderId());
 
-        log.info("PaymentService: -> Сформированная оплата заказа: {}", savedPayment);
         return savedPayment;
     }
 
     @Override
     public BigDecimal getTotalCost(OrderDto order) {
-        checkProductPrice(order);
-
-        BigDecimal productTotalCost = productCost(order);
+        BigDecimal productTotalCost = getProductCost(order);
         BigDecimal deliveryPrice = order.deliveryPrice();
         BigDecimal tax = productTotalCost.multiply(vat);
-
         BigDecimal totalCost = productTotalCost.add(deliveryPrice).add(tax);
+        log.info("Определена полная стоимость заказа: {}", totalCost);
 
-        log.info("PaymentService: -> Полная стоимость заказа: {}", totalCost);
         return totalCost;
     }
 
     @Override
     @Transactional
     public void paymentSuccess(UUID paymentId) {
-        log.info("PaymentService: -> Метод для эмуляции успешной оплаты: {}", paymentId);
-
         Payment payment = repository.findPaymentByPaymentId(paymentId)
                 .orElseThrow(() -> new NotFoundException("Заказ не найден"));
         payment.setPaymentState(PaymentState.SUCCESS);
         orderClient.payment(payment.getOrderId());
         repository.save(payment);
-
-        log.info("PaymentService: -> Успешная оплата в платежном шлюзе: {}", paymentId);
+        log.info("Успешная оплата");
     }
 
     @Override
-    public BigDecimal productCost(OrderDto order) {
-        log.info("PaymentService: -> Расчёт стоимости товаров в заказе: {}", order);
-
+    public BigDecimal getProductCost(OrderDto order) {
         Map<UUID, Long> products = order.products();
-
-        if (products == null) {
+        if (products == null || products.isEmpty()) {
             throw new ConflictException("Нет продуктов в заказе");
         }
-
         BigDecimal totalCost = BigDecimal.ZERO;
-
         for (Map.Entry<UUID, Long> entry : products.entrySet()) {
             ProductDto product = storeClient.getProduct(entry.getKey());
             BigDecimal productPrice = product.price();
             BigDecimal total = productPrice.multiply(BigDecimal.valueOf(entry.getValue()));
             totalCost = totalCost.add(total);
         }
-
-        log.info("PaymentService: -> Расчёт стоимости товаров в заказе: {}", totalCost);
+        log.info("Общая стоимость товаров: {}", totalCost);
         return totalCost;
     }
 
     @Override
     @Transactional
     public void paymentFailed(UUID paymentId) {
-        log.info("PaymentService: -> Метод для эмуляции отказа в оплате платежного шлюза: {}", paymentId);
-
         Payment payment = repository.findPaymentByPaymentId(paymentId)
-                .orElseThrow(() -> new NotFoundException("Заказ не найден"));
+                .orElseThrow(() -> new NotFoundException("Оплата для заказа не найдена"));
         payment.setPaymentState(PaymentState.FAILED);
         orderClient.paymentFailed(payment.getOrderId());
         repository.save(payment);
-
-        log.info("PaymentService: -> Отказ при оплате заказа: {}", paymentId);
-
+        log.info("Оплата завершилась с ошибкой");
     }
 }

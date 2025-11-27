@@ -4,8 +4,8 @@ import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.interaction.dto.Pageable;
 import ru.yandex.practicum.interaction.enums.ProductCategory;
 import ru.yandex.practicum.interaction.dto.ProductDto;
 import ru.yandex.practicum.interaction.dto.SetProductQuantityStateRequest;
@@ -25,8 +25,7 @@ public interface ShoppingStoreFeignClient {
     ProductDto getProduct(@PathVariable UUID productId);
 
     @GetMapping
-    Page<ProductDto> getProducts(@RequestParam("category") ProductCategory category,
-                                 @SpringQueryMap Pageable pageable);
+    Page<ProductDto> getProducts(@RequestParam("category") ProductCategory category, Pageable pageable);
 
     @PostMapping("/removeProductFromStore")
     boolean removeProduct(@RequestBody UUID productId);

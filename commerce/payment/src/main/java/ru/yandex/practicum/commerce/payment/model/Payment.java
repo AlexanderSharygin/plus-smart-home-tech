@@ -4,12 +4,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.proxy.HibernateProxy;
 import ru.yandex.practicum.interaction.enums.PaymentState;
 
-
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.UUID;
 
 @Entity

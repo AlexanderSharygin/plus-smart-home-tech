@@ -1,6 +1,8 @@
 package ru.yandex.practicum.interaction.dto;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import ru.yandex.practicum.interaction.enums.OrderState;
 
 import java.math.BigDecimal;
@@ -17,8 +19,11 @@ public record OrderDto(
         Double deliveryWeight,
         Double deliveryVolume,
         Boolean fragile,
+        @Positive
         BigDecimal totalPrice,
+        @PositiveOrZero
         BigDecimal deliveryPrice,
+        @Positive
         BigDecimal productPrice
 ) {
 }

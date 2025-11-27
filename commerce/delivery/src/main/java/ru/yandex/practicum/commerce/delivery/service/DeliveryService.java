@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface DeliveryService {
 
-    DeliveryDto planDelivery(DeliveryDto delivery);
+    DeliveryDto createDelivery(DeliveryDto delivery);
 
     void deliverySuccessful(UUID deliveryId);
 
@@ -17,6 +17,6 @@ public interface DeliveryService {
 
     void deliveryFailed(UUID deliveryId);
 
-    BigDecimal deliveryCost(OrderDto order);
+    BigDecimal getDeliveryCost(OrderDto order);
 
 }

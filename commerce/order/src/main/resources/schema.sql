@@ -14,13 +14,13 @@ CREATE TABLE IF NOT EXISTS orders.orders
     total_price     DOUBLE PRECISION,
     product_price   DOUBLE PRECISION,
     delivery_price  DOUBLE PRECISION
-    );
+);
 
 CREATE TABLE IF NOT EXISTS orders.order_items
 (
-    order_id   UUID   NOT NULL,
-    product_id UUID   NOT NULL,
-    quantity   BIGINT NOT NULL,
+    order_id   UUID    NOT NULL,
+    product_id UUID    NOT NULL,
+    quantity   BIGINT  NOT NULL,
     PRIMARY KEY (order_id, product_id),
     FOREIGN KEY (order_id) REFERENCES orders.orders (order_id) ON DELETE CASCADE
-    );
+);

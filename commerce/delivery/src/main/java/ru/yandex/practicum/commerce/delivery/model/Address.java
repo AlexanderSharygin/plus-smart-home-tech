@@ -12,7 +12,7 @@ import java.util.UUID;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "addresses",  schema = "delivery")
+@Table(name = "addresses", schema = "delivery")
 @Builder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Address {

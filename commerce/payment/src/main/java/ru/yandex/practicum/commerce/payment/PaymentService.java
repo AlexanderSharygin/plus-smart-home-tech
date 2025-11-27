@@ -9,7 +9,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @ConfigurationPropertiesScan
 @EnableFeignClients(basePackages = "ru.yandex.practicum.interaction.feign")
 public class PaymentService {
-	public static void main(String[] args) {
-		SpringApplication.run(PaymentService.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(PaymentService.class, args);
+    }
 }

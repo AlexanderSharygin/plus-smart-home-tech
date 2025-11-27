@@ -16,7 +16,7 @@ import java.util.UUID;
 public interface DeliveryFeignClient {
 
     @PutMapping
-    DeliveryDto planDelivery(@RequestBody @Valid DeliveryDto delivery);
+    DeliveryDto createDelivery(@RequestBody @Valid DeliveryDto delivery);
 
     @PostMapping("/successful")
     void deliverySuccessful(@RequestBody UUID deliveryId);
@@ -28,6 +28,5 @@ public interface DeliveryFeignClient {
     void deliveryFailed(@RequestBody UUID deliveryId);
 
     @PostMapping("/cost")
-    BigDecimal deliveryCost(@RequestBody @Valid OrderDto order);
-
+    BigDecimal getDeliveryCost(@RequestBody @Valid OrderDto order);
 }

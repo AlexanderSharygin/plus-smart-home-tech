@@ -1,13 +1,15 @@
 package ru.yandex.practicum.interaction.feign;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.interaction.dto.CreateNewOrderRequest;
 import ru.yandex.practicum.interaction.dto.OrderDto;
-import ru.yandex.practicum.interaction.dto.Pageable;
+
 import ru.yandex.practicum.interaction.dto.ProductReturnRequest;
 
 import java.util.UUID;
@@ -16,7 +18,7 @@ import java.util.UUID;
 public interface OrderFeignClient {
 
     @GetMapping
-    Page<OrderDto> getOrders(@RequestParam("username") String username,
+    Page<OrderDto> getOrders(@RequestParam("username") @NotBlank String username,
                              @SpringQueryMap Pageable pageable);
 
     @PutMapping

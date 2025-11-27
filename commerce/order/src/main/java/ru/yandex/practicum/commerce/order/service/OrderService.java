@@ -1,20 +1,20 @@
 package ru.yandex.practicum.commerce.order.service;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import ru.yandex.practicum.interaction.dto.CreateNewOrderRequest;
 import ru.yandex.practicum.interaction.dto.OrderDto;
-import ru.yandex.practicum.interaction.dto.Pageable;
 import ru.yandex.practicum.interaction.dto.ProductReturnRequest;
 
 import java.util.UUID;
 
 public interface OrderService {
 
-    Page<OrderDto> getUserOrders(String username, Pageable pageable);
+    Page<OrderDto> getOrders(String username, Pageable pageable);
 
-    OrderDto createNewOrder(CreateNewOrderRequest request);
+    OrderDto createOrder(CreateNewOrderRequest request);
 
-    OrderDto productReturn(ProductReturnRequest request);
+    OrderDto returnProduct(ProductReturnRequest request);
 
     OrderDto payment(UUID orderId);
 
