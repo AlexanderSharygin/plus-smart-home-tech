@@ -1,6 +1,5 @@
 package ru.yandex.practicum.commerce.delivery.model;
 
-import lombok.experimental.UtilityClass;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.interaction.dto.AddressDto;
 import ru.yandex.practicum.interaction.dto.DeliveryDto;
@@ -11,24 +10,19 @@ import java.util.Objects;
 public class DeliveryMapper {
 
     public Delivery toEntity(final DeliveryDto deliveryDto) {
-        Objects.requireNonNull(deliveryDto);
-        return Delivery.builder()
-                .orderId(deliveryDto.getOrderId())
-                .deliveryState(deliveryDto.getDeliveryState())
-                .fromAddress(addressToEntity(deliveryDto.getFromAddress()))
-                .toAddress(addressToEntity(deliveryDto.getToAddress()))
-                .build();
+        Address addressFrom = addressToEntity(deliveryDto.fromAddress());
+        Address addressTo = addressToEntity(deliveryDto.toAddress());
+        return new Delivery(deliveryDto.deliveryId(), null, null, null,
+                addressFrom, addressTo, deliveryDto.deliveryState(), deliveryDto.orderId());
     }
 
     public DeliveryDto toDto(Delivery delivery) {
         Objects.requireNonNull(delivery);
-        return DeliveryDto.builder()
-                .deliveryId(delivery.getDeliveryId())
-                .orderId(delivery.getOrderId())
-                .deliveryState(delivery.getDeliveryState())
-                .fromAddress(addressToDto(delivery.getFromAddress()))
-                .toAddress(addressToDto(delivery.getToAddress()))
-                .build();
+        AddressDto addressDtoFrom = addressToDto(delivery.getFromAddress());
+        AddressDto addressDtoTo = addressToDto(delivery.getToAddress());
+
+        return new DeliveryDto(delivery.getDeliveryId(), addressDtoFrom, addressDtoTo,
+                delivery.getOrderId(), delivery.getDeliveryState());
     }
 
     public Address addressToEntity(AddressDto addressDto) {

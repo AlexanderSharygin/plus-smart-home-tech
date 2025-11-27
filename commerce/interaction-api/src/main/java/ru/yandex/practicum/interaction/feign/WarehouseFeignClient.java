@@ -16,24 +16,24 @@ import java.util.UUID;
 @FeignClient(name = "warehouse", path = "/api/v1/warehouse", fallback = WarehouseFeignClientFallback.class)
 public interface WarehouseFeignClient {
 
+    @GetMapping("/address")
+    AddressDto getWarehouseAddress();
+
     @PutMapping
     void addNewProduct(@RequestBody NewInWarehouseRequest request);
-
-    @PostMapping("/check")
-    BookedProductsDto checkProductAvailability(@RequestBody ShoppingCartDto cart);
 
     @PostMapping("/add")
     void addToWarehouse(@RequestBody AddToWarehouseRequest request);
 
-    @GetMapping("/address")
-    AddressDto getWarehouseAddress();
-
-    @PostMapping("/shipped")
-    void shippedToDelivery(ShippedToDeliveryRequest request);
+    @PostMapping("/check")
+    BookedProductsDto checkProductAvailability(@RequestBody ShoppingCartDto cart);
 
     @PostMapping("/return")
     void acceptReturn(@RequestBody Map<UUID, Integer> products);
 
     @PostMapping("/assembly")
-    BookedProductsDto assemblyProductsForOrder(@RequestBody @Valid AssemblyProductsForOrderRequest request);
+    BookedProductsDto assemblyForOrder(@RequestBody @Valid AssemblyProductsForOrderRequest request);
+
+    @PostMapping("/shipped")
+    void shippedToDelivery(ShippedToDeliveryRequest request);
 }

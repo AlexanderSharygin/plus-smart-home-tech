@@ -59,7 +59,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         delivery.setDeliveryState(DeliveryState.CREATED);
         DeliveryDto savedDelivery = mapper.toDto(repository.save(delivery));
         log.info("DeliveryService -> Указанная заявка с присвоенным идентификатором: {}",
-                savedDelivery.getDeliveryId());
+                savedDelivery.deliveryId());
         return savedDelivery;
     }
 
@@ -97,12 +97,12 @@ public class DeliveryServiceImpl implements DeliveryService {
     @Override
     @Transactional
     public BigDecimal deliveryCost(OrderDto order) {
-        Delivery delivery = getDeliveryById(order.getDeliveryId());
+        Delivery delivery = getDeliveryById(order.deliveryId());
         String fromAddressStreet = delivery.getFromAddress().getStreet();
         BigDecimal totalCost = getTotalCost(delivery, fromAddressStreet);
-        delivery.setDeliveryWeight(BigDecimal.valueOf(order.getDeliveryWeight()));
-        delivery.setDeliveryVolume(BigDecimal.valueOf(order.getDeliveryVolume()));
-        delivery.setFragile(order.getFragile());
+        delivery.setDeliveryWeight(BigDecimal.valueOf(order.deliveryWeight()));
+        delivery.setDeliveryVolume(BigDecimal.valueOf(order.deliveryVolume()));
+        delivery.setFragile(order.fragile());
         repository.save(delivery);
         log.info("DeliveryService -> Полная стоимость доставки заказа: {}", totalCost);
         return totalCost;

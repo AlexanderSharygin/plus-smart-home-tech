@@ -1,7 +1,9 @@
 package ru.yandex.practicum.commerce.warehouse.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.commerce.warehouse.entity.OrderBooking;
@@ -25,54 +27,48 @@ public class WarehouseController implements WarehouseFeignClient {
     private final BookingRepository bookingRepository;
 
     @Override
-    public void addNewProduct(NewInWarehouseRequest request) {
-        log.info("Добавление товара на склад: {}", request);
-        service.addNewProductToWarehouse(request);
-    }
-
-    @Override
-    public BookedProductsDto checkProductAvailability(ShoppingCartDto cart) {
-        log.info("Проверка количества товаров на складе: {}", cart);
-        return service.checkProductAvailability(cart);
-    }
-
-    @Override
-    public void addToWarehouse(AddToWarehouseRequest request) {
-        log.info("Прием товара на склад: {}", request);
-        service.takeProductToWarehouse(request);
-    }
-
-    @Override
     public AddressDto getWarehouseAddress() {
         log.info("Получение адреса склада");
         return service.getWarehouseAddress();
     }
 
     @Override
+    public void addNewProduct(@RequestBody @Valid NewInWarehouseRequest request) {
+        log.info("Добавление товара на склад: {}", request);
+        service.addNewProduct(request);
+    }
+
+    @Override
+    public void addToWarehouse(@RequestBody @Valid AddToWarehouseRequest request) {
+        log.info("Прием товара на склад: {}", request);
+        service.addToWarehouse(request);
+    }
+
+    @Override
+    public BookedProductsDto checkProductAvailability(@RequestBody @Valid ShoppingCartDto cart) {
+        log.info("Проверка количества товаров на складе: {}", cart);
+        return service.checkProductAvailability(cart);
+    }
+
+    @Override
     public void acceptReturn(Map<UUID, Integer> products) {
-        log.info("WarehouseController: -> Принимаем возврат товаров на склад: {}", products);
+        log.info("Возврат товаров на склад: {}", products);
         service.acceptReturn(products);
     }
 
     @Override
-    public BookedProductsDto assemblyProductsForOrder(AssemblyProductsForOrderRequest request) {
-        log.info("WarehouseController: -> Собираем товары к заказу для подготовки к отправке: {}", request);
-        BookedProductsDto products = service.assemblyProductsForOrder(request);
-        return products;
+    public BookedProductsDto assemblyForOrder(@RequestBody @Valid AssemblyProductsForOrderRequest request) {
+        log.info("Начинаем сборку заказа: {}", request);
+        return service.assemblyForOrder(request);
     }
 
     @Override
-    public void shippedToDelivery(ShippedToDeliveryRequest request) {
-        log.info("WarehouseServiceImpl: -> Передача товаров в доставку: {}", request);
-
-        UUID orderId = request.getOrderId();
-
+    public void shippedToDelivery(@RequestBody @Valid ShippedToDeliveryRequest request) {
+        log.info("Передаем товары в доставку: {}", request);
+        UUID orderId = request.orderId();
         OrderBooking booking = bookingRepository.findBookingByOrderId(orderId)
                 .orElseThrow(() -> new NotFoundException("Бронирование не найдено!"));
-
-        booking.setDeliveryId(request.getDeliveryId());
+        booking.setDeliveryId(request.deliveryId());
         bookingRepository.save(booking);
-
-        log.info("WarehouseServiceImpl: -> Товары переданы в доставку");
     }
 }

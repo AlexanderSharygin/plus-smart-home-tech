@@ -11,6 +11,7 @@ import ru.yandex.practicum.commerce.order.model.Order;
 import ru.yandex.practicum.commerce.order.model.OrderMapper;
 import ru.yandex.practicum.commerce.order.repository.OrderRepository;
 import ru.yandex.practicum.interaction.dto.*;
+import ru.yandex.practicum.interaction.enums.DeliveryState;
 import ru.yandex.practicum.interaction.enums.OrderState;
 import ru.yandex.practicum.interaction.exception.model.BadRequestException;
 import ru.yandex.practicum.interaction.exception.model.NotFoundException;
@@ -67,7 +68,7 @@ public class OrderServiceImpl implements OrderService {
         log.info("OrderService -> Создание заказа: {}", request);
 
         // Корзина пользователя
-        ShoppingCartDto cart = request.getShoppingCart();
+        ShoppingCartDto cart = request.shoppingCart();
 
         Order order = Order.builder()
                 .state(OrderState.NEW)
@@ -78,29 +79,25 @@ public class OrderServiceImpl implements OrderService {
         Order newOrder = repository.save(order);
 
         // Собираем товары к заказу для подготовки к отправке
-        AssemblyProductsForOrderRequest assemblyProducts = new AssemblyProductsForOrderRequest();
-        assemblyProducts.setOrderId(newOrder.getOrderId());
-        assemblyProducts.setProducts(cart.products());
+        AssemblyProductsForOrderRequest assemblyProducts = new AssemblyProductsForOrderRequest(cart.products(),
+                newOrder.getOrderId());
 
-        BookedProductsDto booking = warehouseClient.assemblyProductsForOrder(assemblyProducts);
+        BookedProductsDto booking = warehouseClient.assemblyForOrder(assemblyProducts);
 
         newOrder.setDeliveryVolume(booking.deliveryVolume());
         newOrder.setDeliveryWeight(booking.deliveryWeight());
         newOrder.setFragile(booking.fragile());
 
         // Создание доставки
-        DeliveryDto delivery = DeliveryDto.builder()
-                .orderId(newOrder.getOrderId())
-                .fromAddress(warehouseClient.getWarehouseAddress())
-                .toAddress(request.getDeliveryAddress())
-                .build();
+        DeliveryDto delivery = new DeliveryDto(UUID.randomUUID(), warehouseClient.getWarehouseAddress(),
+                request.deliveryAddress(), newOrder.getOrderId(), DeliveryState.CREATED);
 
         DeliveryDto savedDelivery = deliveryFeignClient.planDelivery(delivery);
-        newOrder.setDeliveryId(savedDelivery.getDeliveryId());
+        newOrder.setDeliveryId(savedDelivery.deliveryId());
 
         // Формирование оплаты для заказа
         PaymentDto payment = paymentClient.payment(mapper.toDto(newOrder));
-        newOrder.setPaymentId(payment.getPaymentId());
+        newOrder.setPaymentId(payment.paymentId());
 
         // Расчёт стоимости товаров в заказе
         BigDecimal productPrice = paymentClient.productCost(mapper.toDto(newOrder));
@@ -118,8 +115,8 @@ public class OrderServiceImpl implements OrderService {
     public OrderDto productReturn(ProductReturnRequest request) {
         log.info("OrderService -> Запрос на возврат заказа: {}", request);
 
-        Order order = getOrderById(request.getOrderId());
-        warehouseClient.acceptReturn(request.getProducts());
+        Order order = getOrderById(request.orderId());
+        warehouseClient.acceptReturn(request.products());
         order.setState(OrderState.PRODUCT_RETURNED);
         OrderDto dto = mapper.toDto(repository.save(order));
 

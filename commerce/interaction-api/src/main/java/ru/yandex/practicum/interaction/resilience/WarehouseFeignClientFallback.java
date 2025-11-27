@@ -43,7 +43,7 @@ public class WarehouseFeignClientFallback implements WarehouseFeignClient {
     }
 
     @Override
-    public BookedProductsDto assemblyProductsForOrder(AssemblyProductsForOrderRequest request) {
+    public BookedProductsDto assemblyForOrder(AssemblyProductsForOrderRequest request) {
         throw new ServiceUnavailableException("Warehouse временно недоступен");
     }
 }

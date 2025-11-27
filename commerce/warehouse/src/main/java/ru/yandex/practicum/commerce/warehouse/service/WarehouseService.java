@@ -9,15 +9,16 @@ import java.util.UUID;
 
 public interface WarehouseService {
 
-    void addNewProductToWarehouse(NewInWarehouseRequest request);
+    AddressDto getWarehouseAddress();
+
+    void addNewProduct(NewInWarehouseRequest request);
+
+    void addToWarehouse(AddToWarehouseRequest request);
 
     BookedProductsDto checkProductAvailability(ShoppingCartDto cart);
 
-    void takeProductToWarehouse(AddToWarehouseRequest request);
 
-    AddressDto getWarehouseAddress();
-
-    BookedProductsDto assemblyProductsForOrder(AssemblyProductsForOrderRequest request);
+    BookedProductsDto assemblyForOrder(AssemblyProductsForOrderRequest request);
 
     void acceptReturn(Map<UUID, Integer> products);
 }

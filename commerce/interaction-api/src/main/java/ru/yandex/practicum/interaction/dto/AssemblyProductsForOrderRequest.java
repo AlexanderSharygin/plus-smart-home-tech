@@ -10,16 +10,7 @@ import lombok.experimental.FieldDefaults;
 import java.util.Map;
 import java.util.UUID;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class AssemblyProductsForOrderRequest {
-
-    @NotNull
-    Map<UUID, Long> products;
-
-    @NotNull
-    UUID orderId;
-
-}
+public record AssemblyProductsForOrderRequest(
+        @NotNull Map<UUID, Long> products,
+        @NotNull UUID orderId
+) {}

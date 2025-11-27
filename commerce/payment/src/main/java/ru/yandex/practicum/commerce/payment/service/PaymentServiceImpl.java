@@ -37,7 +37,7 @@ public class PaymentServiceImpl implements PaymentService {
     private BigDecimal vat;
 
     private void checkProductPrice(OrderDto order)    {
-        if (order.getTotalPrice() == null || order.getDeliveryPrice() == null) {
+        if (order.totalPrice() == null || order.deliveryPrice() == null) {
             log.error("В заказе отсутствует необходимая информация!");
             throw new ConflictException("В заказе отсутствует необходимая информация!");
         }
@@ -49,12 +49,12 @@ public class PaymentServiceImpl implements PaymentService {
         checkProductPrice(order);
 
         Payment payment = Payment.builder()
-                .productsTotal(order.getProductPrice())
-                .deliveryTotal(order.getDeliveryPrice())
-                .totalPayment(order.getTotalPrice())
-                .feeTotal(order.getTotalPrice().multiply(vat))
+                .productsTotal(order.productPrice())
+                .deliveryTotal(order.deliveryPrice())
+                .totalPayment(order.totalPrice())
+                .feeTotal(order.totalPrice().multiply(vat))
                 .paymentState(PaymentState.PENDING)
-                .orderId(order.getOrderId())
+                .orderId(order.orderId())
                 .build();
 
         PaymentDto savedPayment = mapper.toDto(repository.save(payment));
@@ -68,7 +68,7 @@ public class PaymentServiceImpl implements PaymentService {
         checkProductPrice(order);
 
         BigDecimal productTotalCost = productCost(order);
-        BigDecimal deliveryPrice = order.getDeliveryPrice();
+        BigDecimal deliveryPrice = order.deliveryPrice();
         BigDecimal tax = productTotalCost.multiply(vat);
 
         BigDecimal totalCost = productTotalCost.add(deliveryPrice).add(tax);
@@ -95,7 +95,7 @@ public class PaymentServiceImpl implements PaymentService {
     public BigDecimal productCost(OrderDto order) {
         log.info("PaymentService: -> Расчёт стоимости товаров в заказе: {}", order);
 
-        Map<UUID, Long> products = order.getProducts();
+        Map<UUID, Long> products = order.products();
 
         if (products == null) {
             throw new ConflictException("Нет продуктов в заказе");
