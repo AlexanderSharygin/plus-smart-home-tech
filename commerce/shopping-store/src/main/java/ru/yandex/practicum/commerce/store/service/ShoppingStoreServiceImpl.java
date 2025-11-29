@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.commerce.store.model.Product;
 import ru.yandex.practicum.commerce.store.model.ProductMapper;
 import ru.yandex.practicum.commerce.store.repository.ProductRepository;
-import ru.yandex.practicum.interaction.dto.Pageable;
 import ru.yandex.practicum.interaction.dto.ProductDto;
 import ru.yandex.practicum.interaction.dto.SetProductQuantityStateRequest;
 import ru.yandex.practicum.interaction.enums.ProductCategory;
@@ -57,12 +57,17 @@ public class ShoppingStoreServiceImpl implements ShoppingStoreService {
     @Override
     public Page<ProductDto> getProductsByCategory(ProductCategory productCategory, Pageable pageable) {
         Sort sort;
-        if (pageable.sort().size() > 1 && pageable.sort().get(1).equals("DESC")) {
-            sort = Sort.by(Sort.Direction.DESC, String.join(",", pageable.sort().getFirst()));
+        if (pageable.getSort().isSorted()) {
+            Sort.Order order = pageable.getSort().iterator().next();
+            if (order.getDirection() == Sort.Direction.DESC) {
+                sort = Sort.by(Sort.Direction.DESC, order.getProperty());
+            } else {
+                sort = Sort.by(Sort.Direction.ASC, order.getProperty());
+            }
         } else {
-            sort = Sort.by(Sort.Direction.ASC, String.join(",", pageable.sort().getFirst()));
+            sort = Sort.unsorted();
         }
-        PageRequest pageRequest = PageRequest.of(pageable.page(), pageable.size(), sort);
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
         Page<ProductDto> products = repository.findAllByProductCategory(productCategory, pageRequest)
                 .map(mapper::toDto);
         log.info("Найден список товаров с типом: {}", productCategory);
